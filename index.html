@@ -3,235 +3,399 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Kochi 库存盘点</title>
+<title>Kochi 管理后台</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,'PingFang SC',sans-serif;background:#f2f2f7;color:#1c1c1e;min-height:100vh}
-input,select,textarea{font-size:16px!important}
-button{-webkit-appearance:none;touch-action:manipulation}
-/* LOGIN */
-.lo{position:fixed;top:0;left:0;right:0;bottom:0;background:#1c1c1e;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
-.lo-brand{font-size:32px;font-weight:800;color:#fff;letter-spacing:2px;margin-bottom:4px}
-.lo-sub{font-size:13px;color:#ffffff66;margin-bottom:36px}
-.lo-card{background:#2c2c2e;border-radius:20px;padding:24px;width:100%;max-width:320px}
-.lo-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:16px;text-align:center}
-.staff-list{display:flex;flex-direction:column;gap:8px}
-.staff-btn{padding:14px 16px;background:#3a3a3c;border:none;border-radius:12px;color:#fff;font-size:16px;font-weight:600;cursor:pointer;text-align:left;touch-action:manipulation;display:flex;align-items:center;justify-content:space-between;width:100%}
-.staff-btn:active{background:#5856d6}
-.pin-sec{display:none}.pin-sec.show{display:block}
-.pin-dots{display:flex;justify-content:center;gap:14px;margin:16px 0 20px}
-.pd{width:18px;height:18px;border-radius:50%;background:#3a3a3c;border:2px solid #555;transition:all 0.15s}
-.pd.on{background:#5856d6;border-color:#5856d6}
-.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.pp{padding:17px;background:#3a3a3c;border:none;border-radius:12px;color:#fff;font-size:24px;font-weight:600;cursor:pointer;text-align:center;touch-action:manipulation;width:100%}
-.pp:active{background:#5856d6}
-.pp.del{font-size:18px;color:#ff453a}
-.pp.emp{background:transparent;pointer-events:none}
-.pin-err{color:#ff453a;font-size:13px;text-align:center;margin-top:10px;min-height:18px}
-.lo-back{background:none;border:none;color:#ffffff55;font-size:13px;cursor:pointer;margin-top:14px;width:100%;text-align:center;touch-action:manipulation;padding:6px}
-/* TOPBAR */
-.topbar{background:#1c1c1e;padding:12px 16px 10px;position:sticky;top:0;z-index:100}
-.topbar-row{display:flex;justify-content:space-between;align-items:flex-start}
-.brand{font-size:13px;font-weight:700;color:#ffffffaa;letter-spacing:0.5px}
-.user-row{display:flex;align-items:center;gap:6px;margin-top:3px}
-.user-name{font-size:11px;color:#34c759;font-weight:600}
-.logout-btn{background:none;border:none;color:#ff453a;font-size:11px;cursor:pointer;padding:2px 4px;touch-action:manipulation}
-.clock-time{font-size:20px;font-weight:700;color:#fff;text-align:right;font-variant-numeric:tabular-nums}
-.clock-date{font-size:11px;color:#ffffff88;text-align:right;margin-top:1px}
-/* STORE */
-.store-wrap{background:#2c2c2e;padding:10px 16px}
-.store-label{font-size:11px;font-weight:700;color:#ffffff88;letter-spacing:0.5px;margin-bottom:6px}
-.store-btns{display:flex;gap:8px}
-.store-btn{flex:1;padding:10px;border-radius:12px;border:1.5px solid #3a3a3c;background:#3a3a3c;color:#ffffffaa;font-size:14px;font-weight:600;cursor:pointer;text-align:center;touch-action:manipulation}
-.store-btn.active{background:#5856d6;border-color:#5856d6;color:#fff}
-/* EMERGENCY */
-.emer-btn-wrap{background:#2c2c2e;padding:0 16px 12px}
-.emer-btn{width:100%;padding:12px;background:#ff3b30;color:#fff;font-size:14px;font-weight:700;border:none;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;touch-action:manipulation}
-.emer-page{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#f2f2f7;z-index:200;overflow-y:auto}
-.emer-page.show{display:block}
-.emer-top{background:#ff3b30;padding:14px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
-.emer-back-btn{background:rgba(255,255,255,0.2);border:none;color:#fff;font-size:14px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;touch-action:manipulation}
-.emer-body{padding:16px}
-.emer-info{background:#fff0f0;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:#c0392b;font-weight:500;border:1px solid #ffb3b3}
-.emer-sec{font-size:12px;font-weight:700;color:#8e8e93;letter-spacing:0.5px;text-transform:uppercase;margin:14px 0 8px}
-.emer-search-inp{width:100%;padding:10px 14px;border:1.5px solid #d1d1d6;border-radius:12px;font-size:16px;color:#1c1c1e;background:#fff;margin-bottom:12px}
-.emer-search-inp:focus{outline:none;border-color:#ff3b30}
-.emer-items-list{background:#fff;border-radius:12px;border:1px solid #e5e5ea;overflow:hidden;max-height:220px;overflow-y:auto}
-.emer-item{padding:11px 14px;border-bottom:1px solid #f5f5f7;cursor:pointer;display:flex;justify-content:space-between;align-items:center;touch-action:manipulation}
-.emer-item:last-child{border-bottom:none}
-.emer-item.selected{background:#fff0f0}
-.emer-item-zh{font-size:14px;font-weight:600;color:#1c1c1e}
-.emer-item-de{font-size:11px;color:#8e8e93;margin-top:1px}
-.emer-item-sup{font-size:10px;font-weight:600;padding:2px 6px;border-radius:5px;background:#fff0f0;color:#c00;flex-shrink:0;margin-left:8px}
-.emer-empty-txt{text-align:center;padding:20px;color:#8e8e93;font-size:13px}
-.sel-items{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
-.sel-card{background:#fff;border-radius:12px;border:1.5px solid #ffb3b3;padding:12px 14px}
-.sel-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.sel-zh{font-size:14px;font-weight:600;color:#1c1c1e}
-.sel-remove{background:#ff3b30;color:#fff;border:none;border-radius:6px;padding:3px 8px;font-size:12px;cursor:pointer;touch-action:manipulation}
-.sel-row{display:flex;gap:8px;align-items:center;margin-top:6px}
-.sel-lbl{font-size:12px;color:#8e8e93;white-space:nowrap}
-.sel-reason{flex:1;padding:7px 10px;border:1.5px solid #d1d1d6;border-radius:8px;font-size:14px;color:#1c1c1e;background:#f9f9f9}
-.sel-note{width:100%;padding:7px 10px;border:1.5px solid #d1d1d6;border-radius:8px;font-size:14px;color:#1c1c1e;background:#f9f9f9;margin-top:6px;resize:none}
-.emer-submit{width:100%;padding:15px;background:#ff3b30;color:#fff;font-size:16px;font-weight:700;border:none;border-radius:14px;cursor:pointer;margin-top:8px;touch-action:manipulation}
-.emer-result{background:#fff0f0;border-radius:12px;border:1.5px solid #ffb3b3;padding:14px;margin-top:14px;display:none}
-.emer-result.show{display:block}
-.emer-result-box{font-size:13px;color:#3c3c43;white-space:pre-wrap;line-height:1.6;max-height:200px;overflow-y:auto}
-.emer-copy{width:100%;padding:11px;background:#ff3b30;color:#fff;font-size:14px;font-weight:700;border:none;border-radius:10px;cursor:pointer;margin-top:10px;touch-action:manipulation}
-/* TODAY */
-.today-bar{background:#1c1c1e;padding:8px 16px 12px}
-.today-lbl{font-size:11px;font-weight:700;color:#ffffff88;letter-spacing:0.5px;margin-bottom:6px}
-.chips{display:flex;gap:6px;flex-wrap:wrap}
-.chip{padding:5px 10px;border-radius:10px;font-size:12px;font-weight:600;touch-action:manipulation}
-.chip.urgent{background:#ff3b30;color:#fff}
-.chip.warn{background:#ff9500;color:#fff}
-.chip.info{background:#5856d6;color:#fff}
-.chip.muted{background:#3a3a3c;color:#ffffff66}
-/* COUNTDOWN */
-.cd-strip{background:#2c2c2e;padding:8px 12px;display:flex;gap:8px;overflow-x:auto}
-.cd-strip::-webkit-scrollbar{display:none}
-.cd-card{flex-shrink:0;background:#3a3a3c;border-radius:10px;padding:7px 12px;min-width:110px}
-.cd-name{font-size:10px;font-weight:700;color:#ffffff88}
-.cd-dl{font-size:10px;color:#fff;margin-top:1px}
-.cd-ct{font-size:13px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
-.cd-ct.red{color:#ff453a}.cd-ct.orange{color:#ff9f0a}.cd-ct.green{color:#30d158}
-/* BANNER */
-.banner{margin:10px 16px;border-radius:12px;padding:11px 14px;font-size:13px;font-weight:600;display:none}
-.banner.show{display:block}
-.banner.urgent{background:#fff0f0;color:#c0392b;border:1.5px solid #ffb3b3}
-.banner-ttl{font-size:14px;font-weight:700;margin-bottom:3px}
-/* STATS */
-.stats-row{display:flex;gap:8px;padding:10px 16px;background:#fff;border-bottom:1px solid #e5e5ea}
-.stat{flex:1;background:#f2f2f7;border-radius:10px;padding:8px 6px;text-align:center}
-.stat-n{font-size:22px;font-weight:700;color:#1c1c1e}
-.stat-l{font-size:11px;color:#8e8e93;margin-top:2px}
-.prog-wrap{height:4px;background:#e5e5ea}
-.prog-fill{height:4px;background:#5856d6;transition:width 0.3s}
-/* VIEW TOGGLE */
-.view-toggle{display:flex;gap:6px;padding:10px 16px;background:#fff;border-bottom:1px solid #e5e5ea;overflow-x:auto}
-.view-toggle::-webkit-scrollbar{display:none}
-.vt-btn{flex-shrink:0;padding:6px 14px;border-radius:16px;font-size:12px;font-weight:600;border:1px solid #d1d1d6;background:#f2f2f7;color:#3c3c43;cursor:pointer;touch-action:manipulation;white-space:nowrap}
-.vt-btn.active{background:#5856d6;border-color:#5856d6;color:#fff}
-/* TABS */
-.tabs-wrap{background:#fff;border-bottom:1px solid #e5e5ea;padding:0 12px;overflow-x:auto;white-space:nowrap}
-.tabs-wrap::-webkit-scrollbar{display:none}
-.tabs-inner{display:inline-flex;gap:4px;padding:8px 0}
-.tab{display:inline-flex;flex-direction:column;align-items:center;padding:6px 14px;border-radius:12px;font-size:12px;font-weight:600;color:#3c3c43;background:#f2f2f7;border:none;cursor:pointer;white-space:nowrap;gap:1px;touch-action:manipulation}
-.tab.active{background:#5856d6;color:#fff}
-.tab-sub{font-size:10px;font-weight:500;opacity:0.7}
-.tab.urgent{background:#fff0f0;color:#c00;border:1.5px solid #ffb3b3}
-.tab.urgent.active{background:#ff3b30;color:#fff;border-color:#ff3b30}
-/* ITEMS */
-.sec-hdr{padding:12px 16px 5px;font-size:11px;font-weight:700;color:#8e8e93;letter-spacing:0.5px;text-transform:uppercase;background:#f2f2f7;display:flex;align-items:center;gap:6px}
-.loc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.item-card{background:#fff;border-bottom:1px solid #f2f2f7;display:flex;align-items:center;padding:12px 14px;gap:10px;min-height:64px}
-.item-card.done .item-zh{color:#8e8e93}
-.chk{width:22px;height:22px;border-radius:50%;border:2px solid #d1d1d6;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
-.chk.on{background:#34c759;border-color:#34c759}
-.chk.on::after{content:'';width:6px;height:10px;border:2.5px solid #fff;border-top:none;border-left:none;transform:rotate(45deg) translateY(-1px);display:block}
-.item-info{flex:1;min-width:0}
-.item-zh{font-size:15px;font-weight:600;color:#1c1c1e;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.item-de{font-size:11px;color:#8e8e93;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px}
-.boss-tag{display:inline-block;background:#fff8ee;color:#a05000;border:1px solid #ffd8a0;font-size:10px;font-weight:700;padding:1px 6px;border-radius:5px;margin-left:5px}
-.today-tag{display:inline-block;background:#edfbf1;color:#1c7c3e;border:1px solid #a8e6c0;font-size:10px;font-weight:700;padding:1px 6px;border-radius:5px;margin-left:5px}
-.qty-wrap{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:5px}
-.qty-inp{width:70px;text-align:center;font-size:16px!important;font-weight:600;color:#1c1c1e;padding:6px;border:1.5px solid #d1d1d6;border-radius:10px;background:#f2f2f7;touch-action:manipulation}
-.qty-inp:focus{outline:none;border-color:#5856d6;background:#eeeeff}
-.qty-inp.filled{border-color:#34c759;background:#edfbf1;color:#1c7c3e}
-.unit-sel{font-size:14px;padding:4px 6px;border:1.5px solid #d1d1d6;border-radius:8px;background:#f2f2f7;color:#1c1c1e;touch-action:manipulation;max-width:80px}
-.unit-sel.filled{border-color:#34c759;background:#edfbf1;color:#1c7c3e}
-/* SUBMIT */
-.submit-area{padding:16px}
-.submit-btn{width:100%;padding:15px;background:#5856d6;color:#fff;font-size:16px;font-weight:700;border:none;border-radius:14px;cursor:pointer;touch-action:manipulation}
-.result-panel{display:none;padding:16px;background:#fff}
-.result-panel.show{display:block}
-.result-ttl{font-size:16px;font-weight:700;color:#1c1c1e;margin-bottom:6px}
-.result-sub{font-size:13px;color:#8e8e93;margin-bottom:10px}
-.result-box{background:#f2f2f7;border-radius:12px;padding:12px 14px;font-size:13px;color:#3c3c43;white-space:pre-wrap;line-height:1.6;max-height:280px;overflow-y:auto}
-.copy-btn{margin-top:10px;width:100%;padding:12px;background:#f2f2f7;color:#5856d6;font-size:14px;font-weight:700;border:none;border-radius:10px;cursor:pointer;touch-action:manipulation}
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.78);color:#fff;padding:10px 20px;border-radius:20px;font-size:14px;font-weight:500;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:999;white-space:nowrap}
-.toast.show{opacity:1}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,'PingFang SC',sans-serif;background:#f5f5f7;color:#1c1c1e;display:flex;min-height:100vh}
+input,select,textarea{font-size:14px}
+button{-webkit-appearance:none;touch-action:manipulation;cursor:pointer}
+.sidebar{width:210px;background:#1c1c1e;min-height:100vh;display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sb-brand{padding:18px 16px 10px}
+.sb-name{font-size:14px;font-weight:700;color:#fff}
+.sb-sub{font-size:10px;color:#ffffff44;margin-top:2px}
+.sb-clk{padding:0 16px 12px;border-bottom:1px solid #3a3a3c}
+.sc-time{font-size:18px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
+.sc-date{font-size:10px;color:#ffffff55;margin-top:2px}
+.nav{padding:8px;flex:1}
+.nav-sec{font-size:10px;font-weight:700;color:#ffffff33;letter-spacing:0.8px;padding:8px 8px 4px}
+.ni{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;cursor:pointer;color:#ffffffaa;font-size:13px;font-weight:500;margin-bottom:2px;touch-action:manipulation}
+.ni:hover{background:#2c2c2e;color:#fff}
+.ni.active{background:#5856d6;color:#fff}
+.ni-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.nb{margin-left:auto;background:#ff3b30;color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:8px}
+.sb-foot{padding:10px 16px;border-top:1px solid #3a3a3c;font-size:10px;color:#ffffff22}
+.main{flex:1;padding:20px;overflow-y:auto;min-width:0}
+.page{display:none}.page.active{display:block}
+.pg-title{font-size:20px;font-weight:700;color:#1c1c1e;margin-bottom:3px}
+.pg-sub{font-size:13px;color:#8e8e93;margin-bottom:16px}
+.card{background:#fff;border-radius:14px;border:1px solid #e5e5ea;padding:16px;margin-bottom:12px}
+.ct{font-size:14px;font-weight:700;color:#1c1c1e;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.ct span{font-size:12px;color:#8e8e93;font-weight:400}
+/* deadlines */
+.dl-strip{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.dlc{background:#fff;border-radius:10px;border:1px solid #e5e5ea;padding:10px 14px;min-width:120px}
+.dlc-name{font-size:10px;font-weight:700;color:#8e8e93}
+.dlc-time{font-size:11px;color:#1c1c1e;margin-top:2px;font-weight:500}
+.dlc-ct{font-size:14px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
+.dlc-ct.red{color:#ff3b30}.dlc-ct.orange{color:#ff9500}.dlc-ct.green{color:#34c759}
+/* tabs */
+.store-tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.stab{padding:7px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid #e5e5ea;color:#3c3c43;background:#fff;touch-action:manipulation}
+.stab.active{background:#5856d6;border-color:#5856d6;color:#fff}
+.stab.both{background:#1c1c1e;border-color:#1c1c1e;color:#fff}
+/* filter bar */
+.sf{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.sfb{padding:5px 12px;border-radius:14px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #d1d1d6;color:#3c3c43;background:#f2f2f7;touch-action:manipulation;white-space:nowrap}
+.sfb.active{background:#5856d6;border-color:#5856d6;color:#fff}
+/* table */
+.tb{width:100%;border-collapse:collapse;font-size:13px}
+.tb th{text-align:left;padding:8px 10px;font-size:11px;font-weight:700;color:#8e8e93;border-bottom:1px solid #f2f2f7;background:#fafafa;white-space:nowrap}
+.tb td{padding:9px 10px;border-bottom:1px solid #f5f5f7;vertical-align:middle}
+.tb tr:last-child td{border-bottom:none}
+.tb tr:hover td{background:#fafafe}
+.izc{font-weight:600;color:#1c1c1e}
+.idc{font-size:11px;color:#8e8e93;margin-top:1px}
+.sc{font-weight:700;font-variant-numeric:tabular-nums}
+.sc.alert{color:#ff3b30}.sc.warn{color:#ff9500}.sc.ok{color:#34c759}.sc.empty{color:#c7c7cc;font-weight:400}
+.bdg{display:inline-block;padding:2px 7px;border-radius:6px;font-size:11px;font-weight:600}
+.bdg.red{background:#fff0f0;color:#c0392b}.bdg.orange{background:#fff8ee;color:#a05000}
+.bdg.green{background:#edfbf1;color:#1c7c3e}.bdg.gray{background:#f2f2f7;color:#8e8e93}
+.loc-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;flex-shrink:0}
+.freq-bdg{font-size:10px;padding:2px 6px;border-radius:4px;font-weight:600;white-space:nowrap}
+.freq-day{background:#fff0f0;color:#c00}
+.freq-2d{background:#fff4f0;color:#a03000}
+.freq-3d{background:#fff8ee;color:#a05000}
+.freq-w1{background:#f0f8ff;color:#0055a0}
+.freq-w14{background:#e8f5e9;color:#1b5e20}
+.freq-2w{background:#f2f2f7;color:#8e8e93}
+.flag-btn{padding:3px 8px;font-size:11px;font-weight:600;border-radius:6px;border:none;touch-action:manipulation}
+.flag-btn.on{background:#ff9500;color:#fff}
+.flag-btn.off{background:#f2f2f7;color:#8e8e93;border:1px solid #d1d1d6}
+.ref-btn{padding:6px 12px;background:#f2f2f7;color:#5856d6;font-size:12px;font-weight:600;border:1px solid #d1d1d6;border-radius:8px;touch-action:manipulation;margin-left:auto}
+.lu{font-size:12px;color:#8e8e93;margin-bottom:10px}
+.no-data{text-align:center;padding:30px;color:#8e8e93;font-size:13px}
+/* admin layout */
+.ag{display:grid;grid-template-columns:260px 1fr;gap:14px}
+.al{background:#fff;border-radius:14px;border:1px solid #e5e5ea;overflow:hidden;max-height:calc(100vh - 200px);overflow-y:auto}
+.ali{padding:10px 14px;border-bottom:1px solid #f5f5f7;cursor:pointer;display:flex;align-items:center;justify-content:space-between;touch-action:manipulation}
+.ali:hover{background:#fafafe}.ali.active{background:#eeeeff}
+.ali-zh{font-size:13px;font-weight:600;color:#1c1c1e}
+.ali-de{font-size:10px;color:#8e8e93;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
+.sup-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;flex-shrink:0}
+/* forms */
+.ef{background:#fff;border-radius:14px;border:1px solid #e5e5ea;padding:16px}
+.fl{font-size:12px;font-weight:700;color:#3c3c43;margin-bottom:4px;display:block}
+.fi{width:100%;padding:8px 11px;border:1.5px solid #d1d1d6;border-radius:10px;font-size:14px;color:#1c1c1e;background:#f9f9f9}
+.fi:focus{outline:none;border-color:#5856d6;background:#fff}
+.fr{margin-bottom:12px}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.br{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.bp{flex:1;padding:10px;background:#5856d6;color:#fff;font-size:14px;font-weight:700;border:none;border-radius:10px}
+.bd{padding:10px 14px;background:#fff0f0;color:#c00;font-size:13px;font-weight:600;border:1px solid #ffb3b3;border-radius:10px}
+.bs{flex:1;padding:10px;background:#f2f2f7;color:#3c3c43;font-size:14px;font-weight:600;border:none;border-radius:10px}
+.add-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 12px;background:#5856d6;color:#fff;font-size:13px;font-weight:600;border:none;border-radius:10px}
+/* units editor */
+.units-editor{border:1.5px solid #d1d1d6;border-radius:10px;padding:10px;background:#f9f9f9}
+.units-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;min-height:28px}
+.unit-tag{display:inline-flex;align-items:center;gap:4px;background:#eeeeff;color:#3c3489;font-size:12px;font-weight:600;padding:3px 8px;border-radius:6px}
+.unit-tag-del{background:none;border:none;color:#8e8e93;font-size:14px;cursor:pointer;padding:0 2px;line-height:1}
+.units-presets{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
+.unit-preset{padding:4px 8px;border-radius:6px;font-size:11px;font-weight:600;background:#f2f2f7;color:#3c3c43;border:1px solid #d1d1d6;cursor:pointer;touch-action:manipulation}
+.unit-preset.used{background:#eeeeff;color:#3c3489;border-color:#c5c2f5}
+.unit-add-row{display:flex;gap:6px}
+.unit-inp{flex:1;padding:6px 10px;border:1.5px solid #d1d1d6;border-radius:8px;font-size:13px;background:#fff}
+.unit-add-btn{padding:6px 12px;background:#5856d6;color:#fff;font-size:12px;font-weight:700;border:none;border-radius:8px}
+/* es */
+.es{text-align:center;padding:32px 16px;color:#8e8e93}
+.es-icon{font-size:28px;margin-bottom:8px}
+.es-text{font-size:14px;font-weight:600;color:#3c3c43}
+.es-sub{font-size:12px;margin-top:3px}
+/* emergency */
+.enc{background:#fff;border-radius:12px;border:1.5px solid #ffb3b3;padding:12px 16px;margin-bottom:10px}
+.enc-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.enc-store{font-size:13px;font-weight:700;color:#c0392b}
+.enc-time{font-size:11px;color:#8e8e93}
+.enc-item{padding:6px 0;border-bottom:1px solid #fff0f0;font-size:13px}
+.enc-item:last-child{border-bottom:none}
+.enc-zh{font-weight:600}
+.enc-reason{display:inline-block;background:#fff0f0;color:#c0392b;font-size:10px;font-weight:600;padding:1px 5px;border-radius:5px;margin-left:5px}
+.enc-note{font-size:11px;color:#8e8e93;margin-top:2px}
+/* logs */
+.log-row{background:#fff;border-radius:10px;padding:10px 12px;margin-bottom:6px;border:1px solid #e5e5ea;display:flex;gap:10px}
+.log-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.log-name{font-size:13px;font-weight:600;color:#1c1c1e}
+.log-detail{font-size:12px;color:#8e8e93;margin-top:2px}
+.log-time{font-size:11px;color:#c7c7cc;margin-top:2px}
+.log-store{display:inline-block;font-size:10px;font-weight:600;padding:1px 5px;border-radius:5px;background:#f2f2f7;color:#8e8e93;margin-left:5px}
+/* staff */
+.stf-tb{width:100%;border-collapse:collapse;font-size:13px}
+.stf-tb th{text-align:left;padding:8px 10px;font-size:11px;font-weight:700;color:#8e8e93;border-bottom:1px solid #f2f2f7;background:#fafafa}
+.stf-tb td{padding:9px 10px;border-bottom:1px solid #f5f5f7;vertical-align:middle}
+.stf-tb tr:last-child td{border-bottom:none}
+.pin-show{font-family:monospace;letter-spacing:2px;color:#5856d6;font-weight:700}
+.edit-s{padding:4px 9px;background:#f2f2f7;color:#5856d6;font-size:12px;font-weight:600;border:1px solid #d1d1d6;border-radius:6px}
+.store-bdg{display:inline-block;padding:2px 7px;border-radius:6px;font-size:11px;font-weight:600;background:#eeeeff;color:#3c3489}
+/* delivery */
+.del-card{background:#fff;border-radius:12px;border:1px solid #e5e5ea;padding:14px;margin-bottom:10px}
+.del-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.del-sup{font-size:13px;font-weight:700;color:#1c1c1e}
+.del-time{font-size:11px;color:#8e8e93}
+.del-status{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600}
+.del-status.confirmed{background:#edfbf1;color:#1c7c3e}
+.del-status.pending{background:#fff8ee;color:#a05000}
+.del-items{font-size:13px;color:#3c3c43;line-height:1.8}
+/* usage */
+.usage-card{background:#fff;border-radius:12px;border:1px solid #e5e5ea;padding:14px;margin-bottom:10px}
+.usage-item{font-size:14px;font-weight:600;color:#1c1c1e;margin-bottom:4px}
+.usage-trend{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.trend-chip{padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600}
+.trend-stable{background:#eeeeff;color:#3c3489}
+.trend-up{background:#fff0f0;color:#c0392b}
+.trend-down{background:#edfbf1;color:#1c7c3e}
+.no-data-usage{text-align:center;padding:40px;color:#8e8e93}
+/* upload zone */
+.upload-zone{border:2px dashed #d1d1d6;border-radius:14px;padding:30px;text-align:center;cursor:pointer;transition:all 0.2s;background:#fafafa}
+.upload-zone:hover,.upload-zone.drag{border-color:#5856d6;background:#f0eeff}
+.upload-icon{font-size:36px;margin-bottom:8px}
+.upload-text{font-size:14px;font-weight:600;color:#3c3c43}
+.upload-sub{font-size:12px;color:#8e8e93;margin-top:4px}
+.scan-result{background:#f9f9f9;border-radius:12px;border:1px solid #e5e5ea;padding:14px;margin-top:14px}
+.scan-item-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f2f2f7}
+.scan-item-row:last-child{border-bottom:none}
+.scan-zh{flex:1;font-size:13px;font-weight:600}
+.scan-val{width:80px;padding:6px 8px;border:1.5px solid #d1d1d6;border-radius:8px;font-size:13px;text-align:center}
+.scan-unit{font-size:12px;color:#8e8e93;width:40px}
+.scan-del{padding:4px 8px;background:#fff0f0;color:#c00;border:1px solid #ffb3b3;border-radius:6px;font-size:11px}
+/* supplier management */
+.sup-card{background:#fff;border-radius:12px;border:1px solid #e5e5ea;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.sup-color{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.sup-info{flex:1}
+.sup-name{font-size:14px;font-weight:700;color:#1c1c1e}
+.sup-detail{font-size:12px;color:#8e8e93;margin-top:2px}
+.sup-actions{display:flex;gap:6px}
+.sup-edit-btn{padding:5px 10px;background:#f2f2f7;color:#5856d6;font-size:12px;font-weight:600;border:1px solid #d1d1d6;border-radius:8px}
+.sup-del-btn{padding:5px 10px;background:#fff0f0;color:#c00;font-size:12px;font-weight:600;border:1px solid #ffb3b3;border-radius:8px}
 </style>
 </head>
 <body>
-<!-- LOGIN -->
-<div class="lo" id="lo">
-  <div class="lo-brand">KOCHI</div>
-  <div class="lo-sub">Restaurant · Düsseldorf</div>
-  <div class="lo-card">
-    <div id="lo-step1"><div class="lo-title">选择你的账号</div><div class="staff-list" id="staff-list"></div></div>
-    <div id="lo-step2" style="display:none">
-      <div class="lo-title" id="pin-greet">输入PIN码</div>
-      <div class="pin-dots"><div class="pd" id="pd0"></div><div class="pd" id="pd1"></div><div class="pd" id="pd2"></div><div class="pd" id="pd3"></div></div>
-      <div class="pin-pad">
-        <button type="button" class="pp" data-n="1">1</button><button type="button" class="pp" data-n="2">2</button><button type="button" class="pp" data-n="3">3</button>
-        <button type="button" class="pp" data-n="4">4</button><button type="button" class="pp" data-n="5">5</button><button type="button" class="pp" data-n="6">6</button>
-        <button type="button" class="pp" data-n="7">7</button><button type="button" class="pp" data-n="8">8</button><button type="button" class="pp" data-n="9">9</button>
-        <button type="button" class="pp emp"></button><button type="button" class="pp" data-n="0">0</button><button type="button" class="pp del" id="pin-del">⌫</button>
+<div class="sidebar">
+  <div class="sb-brand"><div class="sb-name">KOCHI RESTAURANT</div><div class="sb-sub">管理后台 · Boss Panel v3.0</div></div>
+  <div class="sb-clk"><div class="sc-time" id="sclk">--:--:--</div><div class="sc-date" id="sdate">--</div></div>
+  <div class="nav">
+    <div class="nav-sec">库存管理</div>
+    <div class="ni active" data-page="dashboard"><span class="ni-icon">📊</span>库存看板<span class="nb" id="alert-badge" style="display:none">0</span></div>
+    <div class="ni" data-page="purchase"><span class="ni-icon">🛒</span>采购建议</div>
+    <div class="ni" data-page="delivery"><span class="ni-icon">📦</span>来货记录</div>
+    <div class="ni" data-page="usage"><span class="ni-icon">📈</span>用量报告</div>
+    <div class="nav-sec">通知 & 管理</div>
+    <div class="ni" data-page="emergency"><span class="ni-icon">🚨</span>告急通知<span class="nb" id="emer-badge" style="display:none">!</span></div>
+    <div class="ni" data-page="flags"><span class="ni-icon">🔔</span>本次必盘</div>
+    <div class="ni" data-page="logs"><span class="ni-icon">📋</span>操作日志</div>
+    <div class="ni" data-page="staff"><span class="ni-icon">👥</span>员工管理</div>
+    <div class="nav-sec">系统设置</div>
+    <div class="ni" data-page="suppliers"><span class="ni-icon">🏭</span>供应商管理</div>
+    <div class="ni" data-page="admin"><span class="ni-icon">⚙️</span>品类管理</div>
+  </div>
+  <div class="sb-foot">Kochi System v3.0</div>
+</div>
+<div class="main">
+  <!-- DASHBOARD -->
+  <div class="page active" id="page-dashboard">
+    <div class="pg-title">库存看板</div>
+    <div class="pg-sub">实时查看两家门店库存状态</div>
+    <div class="dl-strip" id="dl-strip"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+      <div class="store-tabs">
+        <div class="stab active" data-view="wetter">Kochi Wetter</div>
+        <div class="stab" data-view="bismarck">Kochi Bismarck</div>
+        <div class="stab both" data-view="both">两店合并</div>
       </div>
-      <div class="pin-err" id="pin-err"></div>
-      <button type="button" class="lo-back" id="lo-back">← 重新选择账号</button>
+      <button type="button" class="ref-btn" id="refresh-btn">↻ 刷新</button>
+    </div>
+    <div class="sf" id="sup-filter-dash"></div>
+    <div class="lu" id="last-updated">上次更新：--</div>
+    <div id="inv-wrap"></div>
+  </div>
+  <!-- PURCHASE -->
+  <div class="page" id="page-purchase">
+    <div class="pg-title">采购建议</div>
+    <div class="pg-sub">根据两店库存与预警线自动计算合并采购量</div>
+    <div id="purchase-wrap"></div>
+  </div>
+  <!-- DELIVERY -->
+  <div class="page" id="page-delivery">
+    <div class="pg-title">来货记录</div>
+    <div class="pg-sub">上传德文送货单，AI自动识别，确认后录入来货记录</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+      <div>
+        <div class="card">
+          <div class="ct">📷 上传送货单</div>
+          <div class="fr">
+            <label class="fl">门店</label>
+            <select class="fi" id="del-store"><option value="wetter">Kochi Wetter</option><option value="bismarck">Kochi Bismarck</option></select>
+          </div>
+          <div class="fr">
+            <label class="fl">供应商</label>
+            <select class="fi" id="del-sup"></select>
+          </div>
+          <div class="upload-zone" id="upload-zone">
+            <div class="upload-icon">📄</div>
+            <div class="upload-text">点击或拖入送货单图片</div>
+            <div class="upload-sub">支持 JPG、PNG、PDF截图</div>
+            <input type="file" id="upload-input" accept="image/*" style="display:none">
+          </div>
+          <div id="scan-preview" style="margin-top:10px;display:none">
+            <img id="scan-img" style="width:100%;border-radius:10px;margin-bottom:10px">
+            <button type="button" class="bp" id="scan-btn" style="width:100%">🤖 AI识别送货单</button>
+          </div>
+        </div>
+        <div id="scan-result-wrap" style="display:none">
+          <div class="card">
+            <div class="ct">✅ 识别结果 <span>请确认并调整数量</span></div>
+            <div id="scan-items"></div>
+            <div class="br">
+              <button type="button" class="bp" id="confirm-delivery-btn">确认录入</button>
+              <button type="button" class="bs" id="cancel-scan-btn">取消</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="ct" style="font-size:14px;font-weight:700;margin-bottom:10px">历史来货记录</div>
+        <div class="sf" id="del-filter-sup"></div>
+        <div id="delivery-list"><div class="no-data">暂无来货记录</div></div>
+      </div>
+    </div>
+  </div>
+  <!-- USAGE -->
+  <div class="page" id="page-usage">
+    <div class="pg-title">用量报告</div>
+    <div class="pg-sub">基于盘点数据和来货记录计算实际用量（需积累数据后显示）</div>
+    <div class="sf" id="usage-sup-filter"></div>
+    <div id="usage-wrap">
+      <div class="no-data-usage">
+        <div style="font-size:48px;margin-bottom:12px">📊</div>
+        <div style="font-size:15px;font-weight:600;color:#3c3c43;margin-bottom:6px">数据积累中</div>
+        <div style="font-size:13px;color:#8e8e93">系统需要至少2周的盘点数据和来货记录<br>才能生成有意义的用量报告</div>
+        <div style="margin-top:16px;background:#fff;border-radius:12px;border:1px solid #e5e5ea;padding:16px;text-align:left;max-width:400px;margin-left:auto;margin-right:auto">
+          <div style="font-size:12px;font-weight:700;color:#8e8e93;margin-bottom:8px">报告将包含：</div>
+          <div style="font-size:13px;color:#3c3c43;line-height:2">
+            📉 每周用量趋势（折线图）<br>
+            🔄 用量稳定 / 增长 / 下降判断<br>
+            📅 工作日 vs 周末用量对比<br>
+            ⚠️ 用量异常预警
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- EMERGENCY -->
+  <div class="page" id="page-emergency">
+    <div class="pg-title">库存告急通知</div>
+    <div class="pg-sub">员工上报的紧急缺货情况</div>
+    <div id="emer-wrap"><div class="es"><div class="es-icon">✅</div><div class="es-text">暂无告急通知</div></div></div>
+  </div>
+  <!-- FLAGS -->
+  <div class="page" id="page-flags">
+    <div class="pg-title">本次必盘设置</div>
+    <div class="pg-sub">标记后员工下次盘点时该品项必须出现，提交后自动清除</div>
+    <div class="sf" id="flags-sup-filter"></div>
+    <div id="flags-wrap"></div>
+  </div>
+  <!-- LOGS -->
+  <div class="page" id="page-logs">
+    <div class="pg-title">操作日志</div>
+    <div class="pg-sub">员工登录和操作记录</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
+      <select class="fi" id="log-fs" style="max-width:140px;padding:7px 10px"><option value="all">全部员工</option></select>
+      <select class="fi" id="log-fa" style="max-width:140px;padding:7px 10px">
+        <option value="all">全部操作</option><option value="登录">登录</option>
+        <option value="盘点提交">盘点提交</option><option value="告急上报">告急上报</option>
+      </select>
+      <button type="button" class="ref-btn" id="log-ref">↻ 刷新</button>
+    </div>
+    <div id="logs-wrap"></div>
+  </div>
+  <!-- STAFF -->
+  <div class="page" id="page-staff">
+    <div class="pg-title">员工管理</div>
+    <div class="pg-sub">添加员工、设置PIN码、管理门店权限</div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:260px">
+        <button type="button" class="add-btn" id="add-staff-btn" style="margin-bottom:10px">+ 添加员工</button>
+        <div id="staff-tbl-wrap"></div>
+      </div>
+      <div style="flex:1;min-width:260px" id="staff-edit-panel">
+        <div class="ef"><div class="es"><div class="es-icon">👈</div><div class="es-text">选择左侧员工编辑</div></div></div>
+      </div>
+    </div>
+  </div>
+  <!-- SUPPLIERS -->
+  <div class="page" id="page-suppliers">
+    <div class="pg-title">供应商管理</div>
+    <div class="pg-sub">添加、编辑、删除供应商，设置截单时间和送货信息</div>
+    <button type="button" class="add-btn" id="add-sup-btn" style="margin-bottom:14px">+ 添加供应商</button>
+    <div id="sup-edit-modal" style="display:none;background:#fff;border-radius:14px;border:1px solid #e5e5ea;padding:18px;margin-bottom:14px">
+      <div style="font-size:14px;font-weight:700;margin-bottom:14px" id="sup-modal-title">添加供应商</div>
+      <div class="fr2">
+        <div class="fr"><label class="fl">供应商名称 *</label><input class="fi" id="sup-name" placeholder="例：Albers"></div>
+        <div class="fr"><label class="fl">标识颜色</label><input type="color" class="fi" id="sup-color" value="#5856d6" style="height:40px;padding:4px"></div>
+      </div>
+      <div class="fr3">
+        <div class="fr"><label class="fl">截单星期</label>
+          <select class="fi" id="sup-dl-day">
+            <option value="1">周一</option><option value="2">周二</option><option value="3">周三</option>
+            <option value="4">周四</option><option value="5">周五</option><option value="6">周六</option><option value="0">周日</option>
+          </select></div>
+        <div class="fr"><label class="fl">截单时间</label><input class="fi" id="sup-dl-time" type="time" value="12:00"></div>
+        <div class="fr"><label class="fl">送货时间</label><input class="fi" id="sup-delivery" placeholder="例：周三"></div>
+      </div>
+      <div class="br">
+        <button type="button" class="bp" id="save-sup-btn">保存</button>
+        <button type="button" class="bs" id="cancel-sup-btn">取消</button>
+      </div>
+    </div>
+    <div id="sup-list"></div>
+  </div>
+  <!-- ADMIN -->
+  <div class="page" id="page-admin">
+    <div class="pg-title">品类管理</div>
+    <div class="pg-sub">添加、编辑、删除品项，设置预警、位置、频率、单位、负责员工</div>
+    <div class="card" id="batch-assign-card">
+      <div class="ct">⚡ 批量分配负责人</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+        <div>
+          <label class="fl">按条件筛选</label>
+          <select class="fi" id="batch-filter-type" style="min-width:120px;padding:7px 10px">
+            <option value="loc">按位置</option>
+            <option value="sup">按供应商</option>
+          </select>
+        </div>
+        <div>
+          <label class="fl">选择值</label>
+          <select class="fi" id="batch-filter-val" style="min-width:140px;padding:7px 10px"></select>
+        </div>
+        <div>
+          <label class="fl">分配给</label>
+          <select class="fi" id="batch-staff-sel" style="min-width:120px;padding:7px 10px"></select>
+        </div>
+        <button type="button" class="bp" id="batch-assign-btn" style="padding:8px 18px;flex:none">批量分配</button>
+        <div id="batch-result" style="font-size:12px;color:#34c759;font-weight:600"></div>
+      </div>
+    </div>
+    <div class="ag">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <select class="fi" id="asf" style="flex:1;padding:7px 10px;font-size:13px"><option value="all">全部供应商</option></select>
+          <button type="button" class="add-btn" id="add-item-btn">+ 新增</button>
+        </div>
+        <div class="al" id="admin-list"></div>
+      </div>
+      <div id="edit-panel"><div class="ef"><div class="es"><div class="es-icon">👈</div><div class="es-text">选择左侧品项编辑</div></div></div></div>
     </div>
   </div>
 </div>
-<!-- MAIN -->
-<div class="topbar">
-  <div class="topbar-row">
-    <div><div class="brand">KOCHI RESTAURANT</div><div class="user-row"><span class="user-name" id="user-name"></span><button type="button" class="logout-btn" id="logout-btn" style="display:none">退出</button></div></div>
-    <div><div class="clock-time" id="clk">--:--</div><div class="clock-date" id="clk-date">--</div></div>
-  </div>
-</div>
-<div class="store-wrap">
-  <div class="store-label">选择门店 · Store</div>
-  <div class="store-btns">
-    <button type="button" class="store-btn active" id="btn-wetter">Kochi Wetter</button>
-    <button type="button" class="store-btn" id="btn-bismarck">Kochi Bismarck</button>
-  </div>
-</div>
-<div class="emer-btn-wrap"><button type="button" class="emer-btn" id="emer-open">🚨 库存告急上报</button></div>
-<!-- EMERGENCY PAGE -->
-<div class="emer-page" id="emer-page">
-  <div class="emer-top"><button type="button" class="emer-back-btn" id="emer-back">← 返回</button><span style="font-size:16px;font-weight:700;color:#fff">🚨 库存告急上报</span></div>
-  <div class="emer-body">
-    <div class="emer-info">用于紧急情况：某品项今天售罄或明天不够用，需要老板立即安排补货。</div>
-    <div class="emer-sec">搜索品项</div>
-    <input type="text" class="emer-search-inp" id="emer-search" placeholder="输入中文名搜索，例：和牛、炸油…">
-    <div class="emer-items-list" id="emer-items-list"><div class="emer-empty-txt">输入关键词搜索品项</div></div>
-    <div class="emer-sec" id="emer-sel-sec" style="display:none">已选品项</div>
-    <div class="sel-items" id="sel-items"></div>
-    <button type="button" class="emer-submit" id="emer-submit" disabled>提交告急报告</button>
-    <div class="emer-result" id="emer-result">
-      <div style="font-size:14px;font-weight:700;color:#c0392b;margin-bottom:8px">✅ 告急已上报</div>
-      <div class="emer-result-box" id="emer-result-box"></div>
-      <button type="button" class="emer-copy" id="emer-copy">复制内容</button>
-    </div>
-  </div>
-</div>
-<div class="today-bar"><div class="today-lbl">今日任务</div><div class="chips" id="chips"></div></div>
-<div class="cd-strip" id="cd-strip"></div>
-<div id="banner-area"></div>
-<div class="stats-row">
-  <div class="stat"><div class="stat-n" id="s-total">0</div><div class="stat-l" id="s-total-lbl">我的任务</div></div>
-  <div class="stat"><div class="stat-n" id="s-done">0</div><div class="stat-l">已盘点</div></div>
-  <div class="stat"><div class="stat-n" id="s-pct">0%</div><div class="stat-l">完成率</div></div>
-</div>
-<div class="prog-wrap"><div class="prog-fill" id="prog" style="width:0%"></div></div>
-<div class="view-toggle" id="view-toggle">
-  <button type="button" class="vt-btn active" data-view="mine">📋 我的任务</button>
-  <button type="button" class="vt-btn" data-view="supplier">按供应商</button>
-  <button type="button" class="vt-btn" data-view="location">按位置</button>
-  <button type="button" class="vt-btn" data-view="all">全部品项</button>
-</div>
-<div class="tabs-wrap" id="tabs-wrap"><div class="tabs-inner" id="tabs"></div></div>
-<div id="list"></div>
-<div class="submit-area"><button type="button" class="submit-btn" id="submit-btn">✓ 提交盘点结果</button></div>
-<div class="result-panel" id="result-panel">
-  <div class="result-ttl">✅ 提交成功</div>
-  <div class="result-sub">数据已保存，老板端可查看。</div>
-  <div class="result-box" id="result-box"></div>
-  <button type="button" class="copy-btn" id="copy-btn">复制内容</button>
-</div>
-<div class="toast" id="toast"></div>
 
 <script>
 const SB_URL='https://vadehcocwrjsbqvssqkk.supabase.co';
@@ -239,492 +403,871 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 async function sbGet(k){try{const r=await fetch(SB_URL+'/rest/v1/inventory?key=eq.'+encodeURIComponent(k)+'&select=value',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});const d=await r.json();if(d&&d.length>0)return{value:d[0].value};return null;}catch(e){return null;}}
 async function sbSet(k,v){try{const val=typeof v==='string'?v:JSON.stringify(v);await fetch(SB_URL+'/rest/v1/inventory',{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},body:JSON.stringify({key:k,value:val,updated_at:new Date().toISOString()})});return true;}catch(e){return false;}}
 
-const KEYS={items:'kochi_items_v3',suppliers:'kochi_suppliers_v1',staff:'kochi_staff_v1',log:'kochi_login_log_v1',emer:'kochi_emergency_v1',flags:'kochi_boss_flags_v1'};
+// ── CONSTANTS ──────────────────────────────────────────────────────
+const KEYS={items:'kochi_items_v3',suppliers:'kochi_suppliers_v1',alerts:'kochi_alerts_v1',staff:'kochi_staff_v1',log:'kochi_login_log_v1',emer:'kochi_emergency_v1',flags:'kochi_boss_flags_v1',deliveries:'kochi_deliveries_v1'};
+const WD=['周日','周一','周二','周三','周四','周五','周六'];
 const WDF=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
 const MM=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-const WD=['周日','周一','周二','周三','周四','周五','周六'];
 const LOC_COLORS={"熟成柜": "#ff9500", "蔬菜冷藏房": "#34c759", "地下冷冻房": "#007aff", "厨房小房间": "#ff3b30", "办公室库房": "#af52de"};
-const LOC_ORDER=["熟成柜", "蔬菜冷藏房", "地下冷冻房", "厨房小房间", "办公室库房"];
-// Normalize sup to array
-function getSups(item){const s=item.sup;if(!s)return[];return Array.isArray(s)?s:[s];}
-function hasSup(item,supId){return getSups(item).includes(supId);}
-
-const FREQ_OPTIONS=[{"id": "every_day", "label": "每天", "days": 1}, {"id": "every_2days", "label": "每2天", "days": 2}, {"id": "every_3days", "label": "每3天", "days": 3}, {"id": "every_week_1", "label": "每周（周一）", "weekdays": [1]}, {"id": "every_week_14", "label": "每周（周一+周四）", "weekdays": [1, 4]}, {"id": "every_2weeks", "label": "每两周", "days": 14}];
+const LOCS=["熟成柜", "蔬菜冷藏房", "地下冷冻房", "厨房小房间", "办公室库房"];
+const UNITS_PRESET=["KG", "克(g)", "个", "ml", "升(L)", "瓶", "箱", "袋", "包", "罐", "桶", "把", "块", "条", "支", "双", "盒"];
+const FREQ_OPTIONS=[{"id": "every_day", "label": "每天", "days": 1}, {"id": "every_2days", "label": "每2天", "days": 2}, {"id": "every_3days", "label": "每3天", "days": 3}, {"id": "every_week_1", "label": "每周（周一）", "weekdays": [1]}, {"id": "every_week_14", "label": "每周（周一+周四）", "weekdays": [1, 4]}, {"id": "every_2weeks", "label": "每两周（周一）", "days": 14}];
 const DEFAULT_ITEMS=[{"zh": "和牛A5 上脑", "de": "Wagyu JPN A5 Top Blade · 792300", "units": ["KG", "克(g)"], "loc": "熟成柜", "freq": "every_week_14", "sup": "sup_albers", "cat": "和牛 Wagyu A5/F1"}, {"zh": "和牛A5 西冷", "de": "Wagyu Kagosh. A5 Roastbeef Striploin · 835000", "units": ["KG", "克(g)"], "loc": "熟成柜", "freq": "every_week_14", "sup": "sup_albers", "cat": "和牛 Wagyu A5/F1"}, {"zh": "和牛A5 肋眼", "de": "Wagyu Kagosh. A5 Entrecote Rib Eye · 835200", "units": ["KG", "克(g)"], "loc": "熟成柜", "freq": "every_week_14", "sup": "sup_albers", "cat": "和牛 Wagyu A5/F1"}, {"zh": "和牛A5 北海道菲力", "de": "Wagyu Hokkaido A5 Filet · 805400", "units": ["KG", "克(g)"], "loc": "熟成柜", "freq": "every_week_14", "sup": "sup_albers", "cat": "和牛 Wagyu A5/F1"}, {"zh": "和牛F1 板腱", "de": "Wagyu F1 Unterschale Outside Flat · 868550", "units": ["KG", "克(g)"], "loc": "熟成柜", "freq": "every_week_14", "sup": "sup_albers", "cat": "和牛 Wagyu A5/F1"}, {"zh": "和牛F1 脖卷", "de": "Wagyu F1 Neck Roll · 867850", "units": ["KG", "克(g)"], "loc": "熟成柜", "freq": "every_week_14", "sup": "sup_albers", "cat": "和牛 Wagyu A5/F1"}, {"zh": "和牛F1 肋排", "de": "Wagyu F1 oK Rib Short Rib · 868250", "units": ["KG", "克(g)"], "loc": "熟成柜", "freq": "every_week_14", "sup": "sup_albers", "cat": "和牛 Wagyu A5/F1"}, {"zh": "美国 牛腩", "de": "Rind-US-GOP Chuck Flap · 900300", "units": ["KG", "克(g)"], "loc": "熟成柜", "freq": "every_week_14", "sup": "sup_albers", "cat": "牛肉 Rindfleisch"}, {"zh": "爱尔兰 肋眼卷", "de": "Rind-IRL-JS Entrecote Ribeye Roll · 896600", "units": ["KG", "克(g)"], "loc": "熟成柜", "freq": "every_week_14", "sup": "sup_albers", "cat": "牛肉 Rindfleisch"}, {"zh": "澳洲 牛腩", "de": "Rind-AUS-BA Flank Steak MS 2-3 · 854500", "units": ["KG", "克(g)"], "loc": "熟成柜", "freq": "every_week_14", "sup": "sup_albers", "cat": "牛肉 Rindfleisch"}, {"zh": "鸡腿排", "de": "KIKOK Hähn-Keulensteak 2,0 ATM · 500199", "units": ["KG", "克(g)"], "loc": "熟成柜", "freq": "every_week_14", "sup": "sup_albers", "cat": "其他肉类"}, {"zh": "伊比利亚猪秘密部位", "de": "Schwein-IBERICO Secreto TK · 912906", "units": ["KG", "克(g)"], "loc": "熟成柜", "freq": "every_week_14", "sup": "sup_albers", "cat": "其他肉类"}, {"zh": "爱尔兰 西冷", "de": "Rind-IRL-JS Roastbeef Mitte Striploin · 896480", "units": ["KG", "克(g)"], "loc": "熟成柜", "freq": "every_week_14", "sup": "sup_albers", "cat": "其他肉类"}, {"zh": "大虾（Albers）", "de": "Riesengarnelen Rote Garnele Wildfang ARG · 9365", "units": ["KG", "克(g)"], "loc": "地下冷冻房", "freq": "every_week_14", "sup": "sup_albers", "cat": "其他肉类"}, {"zh": "牛肉腌料", "de": "Rindfleischmarinade 소불고기양념 · K-015112", "units": ["KG", "袋", "箱"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_kims", "cat": "酱料腌料"}, {"zh": "辣椒炸鸡酱", "de": "Chilipastesauce Fried Chicken · K-015226", "units": ["箱", "瓶"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_kims", "cat": "酱料腌料"}, {"zh": "酱油炸鸡酱", "de": "Sojasoßensauce Fried Chicken · K-015225", "units": ["箱", "瓶"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_kims", "cat": "酱料腌料"}, {"zh": "泡菜（切块）", "de": "Geschnittenes Kimchi CJ Bibigo · XC-26001R", "units": ["箱", "KG"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_kims", "cat": "酱料腌料"}, {"zh": "冷面面条", "de": "Naengmyeon Pfeilwurz 칡냉면사리 · VH-20030", "units": ["箱", "KG"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_kims", "cat": "面食"}, {"zh": "粉丝", "de": "Glasnudeln Otoki 당면 · O-0313", "units": ["箱", "KG"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_kims", "cat": "面食"}, {"zh": "柚子茶", "de": "Yuzutee 유자차 · RG-10294K", "units": ["箱", "瓶"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_kims", "cat": "面食"}, {"zh": "烤肉饺子", "de": "Galbi Gyoza Mandu 비비고갈비만두 · VH-10363", "units": ["箱", "袋"], "loc": "地下冷冻房", "freq": "every_week_1", "sup": "sup_kims", "cat": "饺子"}, {"zh": "泡菜饺子", "de": "Kimchi-Teigtaschen 맛사랑김치손만두 · VH-10006", "units": ["箱", "袋"], "loc": "地下冷冻房", "freq": "every_week_1", "sup": "sup_kims", "cat": "饺子"}, {"zh": "蔬菜饺子", "de": "Handgemachte Gemüsemandu 야채손만두 · VH-10005", "units": ["箱", "袋"], "loc": "地下冷冻房", "freq": "every_week_1", "sup": "sup_kims", "cat": "饺子"}, {"zh": "杂菜饺子", "de": "Vegane Japchae Mandu 비비고잡채만두 · VH-10390", "units": ["箱", "袋"], "loc": "地下冷冻房", "freq": "every_week_1", "sup": "sup_kims", "cat": "饺子"}, {"zh": "烤肉煎饺", "de": "Bulgogi Gyoza Mandu 불고기교자만두 · VH-10371", "units": ["箱", "袋"], "loc": "地下冷冻房", "freq": "every_week_1", "sup": "sup_kims", "cat": "饺子"}, {"zh": "豆腐（嫩）", "de": "Tofu soft Matsarang · XC-15300", "units": ["箱", "块"], "loc": "蔬菜冷藏房", "freq": "every_week_1", "sup": "sup_kims", "cat": "豆腐海藻"}, {"zh": "豆腐（硬）", "de": "Tofu fest CJ Bibigo · XC-15301", "units": ["箱", "块"], "loc": "蔬菜冷藏房", "freq": "every_week_1", "sup": "sup_kims", "cat": "豆腐海藻"}, {"zh": "干海带", "de": "Getrockneter Seetang 청정미역 · K-05120", "units": ["箱", "包"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_kims", "cat": "豆腐海藻"}, {"zh": "切丝海带", "de": "Geschnittener Seetang 자른미역 · K-051203", "units": ["箱", "包"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_kims", "cat": "豆腐海藻"}, {"zh": "调味海苔", "de": "Gewürzte Seetangflocken 김자반 · C-140015", "units": ["箱", "包"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_kims", "cat": "豆腐海藻"}, {"zh": "煮萝卜叶（罐）", "de": "Gekochte Radieschenblätter 시레기 · K-01602", "units": ["箱", "罐"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_kims", "cat": "豆腐海藻"}, {"zh": "地瓜鲷鱼烧", "de": "Fischformgebäck Süßkartoffelfüllung · VW-6511", "units": ["箱", "袋"], "loc": "地下冷冻房", "freq": "every_week_1", "sup": "sup_kims", "cat": "甜品冻品"}, {"zh": "红豆鲷鱼烧", "de": "Fischformgebäck Bohnenpaste · VW-6510", "units": ["箱", "袋"], "loc": "地下冷冻房", "freq": "every_week_1", "sup": "sup_kims", "cat": "甜品冻品"}, {"zh": "炸地瓜片（冻）", "de": "Süßkartoffelscheiben vorfrittiert · VH-81146", "units": ["箱", "KG"], "loc": "地下冷冻房", "freq": "every_week_1", "sup": "sup_kims", "cat": "甜品冻品"}, {"zh": "美乐那雪糕", "de": "Melona Bar 메로나바 Binggrae · VH-4001", "units": ["箱", "支"], "loc": "地下冷冻房", "freq": "every_week_1", "sup": "sup_kims", "cat": "甜品冻品"}, {"zh": "地瓜薯片", "de": "Süßkartoffelsnack 고구마깡 · K-02116", "units": ["箱", "包"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_kims", "cat": "甜品冻品"}, {"zh": "辛拉面炒面", "de": "Shin Ramyun Braten 신라면볶음면 · K-010022", "units": ["箱", "包"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_kims", "cat": "甜品冻品"}, {"zh": "韩国梨", "de": "Koreanische Nashi-Birne Singo 신고배 · X-2012-8", "units": ["箱", "个"], "loc": "蔬菜冷藏房", "freq": "every_week_1", "sup": "sup_kims", "cat": "甜品冻品"}, {"zh": "真露烧酒（原味）", "de": "Chamisul Soju Original 20.1% · B-001", "units": ["箱", "瓶"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_kims", "cat": "酒水"}, {"zh": "真露烧酒（青葡萄）", "de": "Chamisul Soju Grüne Traube 13% · B-012", "units": ["箱", "瓶"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_kims", "cat": "酒水"}, {"zh": "真露烧酒（葡萄柚）", "de": "Chamisul Soju Grapefruit 13% · B-011", "units": ["箱", "瓶"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_kims", "cat": "酒水"}, {"zh": "真露烧酒（草莓）", "de": "Chamisul Soju Erdbeere 13% · B-014", "units": ["箱", "瓶"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_kims", "cat": "酒水"}, {"zh": "顺和里烧酒（蓝莓）", "de": "Soonhari Soju Heidelbeere 12% · B-12005B", "units": ["箱", "瓶"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_kims", "cat": "酒水"}, {"zh": "米酒", "de": "Reiswein Rice Wine 6% · B-01009", "units": ["箱", "瓶"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_kims", "cat": "酒水"}, {"zh": "卡斯啤酒", "de": "Cass Bier 4,5% OB · B-01041R", "units": ["箱", "瓶"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_kims", "cat": "酒水"}, {"zh": "棉手套（普通）", "de": "Baumwollhandschuhe 10Stk · RG-12306K", "units": ["箱", "双"], "loc": "厨房小房间", "freq": "every_2weeks", "sup": "sup_kims", "cat": "其他"}, {"zh": "棉手套（涂胶）", "de": "Beschichtete Baumwollhandschuhe · RG-12304K", "units": ["箱", "双"], "loc": "厨房小房间", "freq": "every_2weeks", "sup": "sup_kims", "cat": "其他"}, {"zh": "金针菇", "de": "Enoki-Pilze (金针菇)", "units": ["KG", "袋"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_china1", "cat": "新鲜蔬菜"}, {"zh": "绿豆芽", "de": "Mungobohnensprossen grün (绿豆芽)", "units": ["KG", "袋"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_china1", "cat": "新鲜蔬菜"}, {"zh": "黄豆芽", "de": "Sojabohnensprossen gelb (黄豆芽)", "units": ["KG", "袋"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_china1", "cat": "新鲜蔬菜"}, {"zh": "蒜薹", "de": "Knoblauchstängel (蒜薹)", "units": ["KG", "把"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_china1", "cat": "新鲜蔬菜"}, {"zh": "香菜", "de": "Koriander (香菜)", "units": ["KG", "把"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_china1", "cat": "新鲜蔬菜"}, {"zh": "小米辣", "de": "Kleine rote Chilischoten (小米辣)", "units": ["KG", "克(g)"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_china1", "cat": "新鲜蔬菜"}, {"zh": "去皮蒜", "de": "Geschälter Knoblauch (去皮蒜)", "units": ["KG", "克(g)"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_china1", "cat": "新鲜蔬菜"}, {"zh": "豆腐（中国）", "de": "Tofu (豆腐)", "units": ["块", "KG"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_china1", "cat": "豆腐"}, {"zh": "东古酱油", "de": "Donggu Sojasoße (东古酱油)", "units": ["瓶", "箱"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_china2", "cat": "酱料"}, {"zh": "味极鲜酱油", "de": "Weijixian Sojasoße (味极鲜)", "units": ["瓶", "箱"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_china2", "cat": "酱料"}, {"zh": "豆瓣酱", "de": "Doubanjiang Bohnenpaste (豆瓣酱)", "units": ["KG", "瓶"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_china2", "cat": "酱料"}, {"zh": "火锅底料", "de": "Hotpot-Gewürzbasis (火锅底料)", "units": ["包", "KG"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_china2", "cat": "酱料"}, {"zh": "南乳汁", "de": "Rote Fermentierte Bohnenpaste (南乳)", "units": ["瓶", "箱"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_china2", "cat": "酱料"}, {"zh": "叉烧酱", "de": "Char Siu Sauce (叉烧酱)", "units": ["瓶", "箱"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_china2", "cat": "酱料"}, {"zh": "猪颈肉", "de": "QS SW-Nacken o.Kn.vac. · 000909.2", "units": ["KG", "克(g)"], "loc": "地下冷冻房", "freq": "every_week_14", "sup": "sup_metro", "cat": "肉类"}, {"zh": "猪五花", "de": "QS SW-Lachse vac. · 000951.4", "units": ["KG", "克(g)"], "loc": "地下冷冻房", "freq": "every_week_14", "sup": "sup_metro", "cat": "肉类"}, {"zh": "培根", "de": "ARO Bacon geschn. ca.1000g · 587518.2", "units": ["KG", "包"], "loc": "地下冷冻房", "freq": "every_week_14", "sup": "sup_metro", "cat": "肉类"}, {"zh": "澳洲牛腩", "de": "Austr. CVS Rinder Flanksteak · 754645.0", "units": ["KG", "克(g)"], "loc": "地下冷冻房", "freq": "every_week_14", "sup": "sup_metro", "cat": "肉类"}, {"zh": "牛舌", "de": "R-Zunge Swiss Cut vac. · 036532.0", "units": ["KG", "克(g)"], "loc": "地下冷冻房", "freq": "every_week_14", "sup": "sup_metro", "cat": "肉类"}, {"zh": "新西兰羊腿（无骨）", "de": "NZ Lammkeule o.Kn.vac.TK · 952870.4", "units": ["KG", "个"], "loc": "地下冷冻房", "freq": "every_week_14", "sup": "sup_metro", "cat": "肉类"}, {"zh": "新西兰羊腿（带骨）", "de": "NZ Lammkeule mit Röhre TK · 004945.2", "units": ["KG", "个"], "loc": "地下冷冻房", "freq": "every_week_14", "sup": "sup_metro", "cat": "肉类"}, {"zh": "干式熟成牛小排", "de": "Dry Aged Short Ribs · 036038.8", "units": ["KG", "克(g)"], "loc": "地下冷冻房", "freq": "every_week_14", "sup": "sup_metro", "cat": "肉类"}, {"zh": "鸡大腿", "de": "MC Häh.Oberkeule o.H.o.K. · 007225.6", "units": ["KG", "克(g)"], "loc": "地下冷冻房", "freq": "every_week_14", "sup": "sup_metro", "cat": "肉类"}, {"zh": "鲈鱼", "de": "MC Wolfsbarsch AMK · 433769.7", "units": ["KG", "条"], "loc": "地下冷冻房", "freq": "every_week_14", "sup": "sup_metro", "cat": "鱼类海鲜"}, {"zh": "三文鱼柳", "de": "MC Lachsfil. Trim D Nor · 520607.3", "units": ["KG", "克(g)"], "loc": "地下冷冻房", "freq": "every_week_14", "sup": "sup_metro", "cat": "鱼类海鲜"}, {"zh": "比目鱼", "de": "MSC MC Scholle · 268263.1", "units": ["KG", "条"], "loc": "地下冷冻房", "freq": "every_week_14", "sup": "sup_metro", "cat": "鱼类海鲜"}, {"zh": "菱鲆", "de": "MC Steinbutt Zucht · 341252.5", "units": ["KG", "条"], "loc": "地下冷冻房", "freq": "every_week_14", "sup": "sup_metro", "cat": "鱼类海鲜"}, {"zh": "白虎虾", "de": "Garnele White Tiger roh 20-40 · 064390.8", "units": ["KG", "克(g)"], "loc": "地下冷冻房", "freq": "every_week_14", "sup": "sup_metro", "cat": "鱼类海鲜"}, {"zh": "黑虎虾", "de": "Black Tiger U10 · 980849.4", "units": ["KG", "克(g)"], "loc": "地下冷冻房", "freq": "every_week_14", "sup": "sup_metro", "cat": "鱼类海鲜"}, {"zh": "章鱼", "de": "Pulpo gep. · 136789.5", "units": ["KG", "个"], "loc": "地下冷冻房", "freq": "every_week_14", "sup": "sup_metro", "cat": "鱼类海鲜"}, {"zh": "海藻鱼子酱", "de": "MC Seetang Kaviarersatz · 607861.2", "units": ["瓶", "个"], "loc": "地下冷冻房", "freq": "every_week_1", "sup": "sup_metro", "cat": "鱼类海鲜"}, {"zh": "金枪鱼罐头", "de": "ARO Thunfisch Chunks Öl · 022428.7", "units": ["箱", "罐"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_metro", "cat": "鱼类海鲜"}, {"zh": "黄瓜", "de": "Gurke NL · 011981.8", "units": ["个", "KG"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "蔬菜水果"}, {"zh": "西兰花", "de": "Broccoli ES · 283546.0", "units": ["个", "KG"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "蔬菜水果"}, {"zh": "西葫芦", "de": "Zucchini ES · 326963.6", "units": ["KG", "个"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "蔬菜水果"}, {"zh": "甜椒（红）", "de": "Paprika rot NL · 299806.0", "units": ["KG", "个"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "蔬菜水果"}, {"zh": "甜椒（混合）", "de": "Bratpaprika MA · 297560.5", "units": ["KG", "个"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "蔬菜水果"}, {"zh": "胡萝卜", "de": "Möhren DE · 290697.2", "units": ["KG", "根"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "蔬菜水果"}, {"zh": "白萝卜", "de": "Weißer Rettich IT · 295520.1", "units": ["个", "KG"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "蔬菜水果"}, {"zh": "大葱", "de": "Lauchzwiebeln DE · 287253.9", "units": ["把", "KG"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "蔬菜水果"}, {"zh": "韭葱", "de": "Porree DE · 302290.2", "units": ["KG", "把"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "蔬菜水果"}, {"zh": "花椰菜", "de": "Blumenkohl DE · 283739.1", "units": ["个", "KG"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "蔬菜水果"}, {"zh": "生菜（菊苣）", "de": "Friseesalat gepackt · 296669.5", "units": ["个", "KG"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "蔬菜水果"}, {"zh": "羊羔生菜", "de": "Feldsalat · 306644.6", "units": ["包", "KG"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "蔬菜水果"}, {"zh": "大白菜", "de": "Chinakohl ES · 077513.0", "units": ["个", "KG"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "蔬菜水果"}, {"zh": "土豆", "de": "MC Spkart VWFK Div · 281599.1", "units": ["KG", "个"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "蔬菜水果"}, {"zh": "去皮大蒜", "de": "MC Knoblauch ges. · 525350.5", "units": ["KG", "克(g)"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "蔬菜水果"}, {"zh": "洋葱", "de": "Gemüsezwiebeln · 067787.2", "units": ["KG", "个"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "蔬菜水果"}, {"zh": "西红柿", "de": "Rispentomaten NL · 008404.6", "units": ["KG", "个"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "蔬菜水果"}, {"zh": "樱桃番茄", "de": "MPM Divino Chees KL.1 · 011669.9", "units": ["KG", "盒"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "蔬菜水果"}, {"zh": "香菇", "de": "Shii-Take Pilze · 116677.6", "units": ["KG", "克(g)"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "蔬菜水果"}, {"zh": "柠檬", "de": "MC Zitronen ES · 016968.0", "units": ["KG", "个"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "蔬菜水果"}, {"zh": "草莓", "de": "Erdbeeren DE · 264288.2", "units": ["KG", "盒"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "蔬菜水果"}, {"zh": "辣椒", "de": "Chili Cayenne · 296480.7", "units": ["KG", "克(g)"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "蔬菜水果"}, {"zh": "盐", "de": "ARO Tafelsalz · 131599.3", "units": ["包", "KG"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_metro", "cat": "调料香料"}, {"zh": "白胡椒粉", "de": "MC Dose Pfeffer weiß · 962988.2", "units": ["罐", "KG"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_metro", "cat": "调料香料"}, {"zh": "黑胡椒碎", "de": "MC DS Pfeffer schwarz · 963019.5", "units": ["罐", "KG"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_metro", "cat": "调料香料"}, {"zh": "蒜粒", "de": "MC Dose Knoblauchgranulat · 963723.2", "units": ["罐", "KG"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_metro", "cat": "调料香料"}, {"zh": "洋葱粒", "de": "MC Dose Zwiebelgranulat · 963274.6", "units": ["罐", "KG"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_metro", "cat": "调料香料"}, {"zh": "孜然粉", "de": "Kümmel gemahlen · 007582.0", "units": ["罐", "KG"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_metro", "cat": "调料香料"}, {"zh": "孜然粒", "de": "Kümmel ganz · 015659.6", "units": ["罐", "KG"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_metro", "cat": "调料香料"}, {"zh": "白芝麻", "de": "Sesam weiß geröstet · 065823.7", "units": ["包", "KG"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_metro", "cat": "调料香料"}, {"zh": "黑芝麻", "de": "Sesam schwarz geröstet · 065863.3", "units": ["包", "KG"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_metro", "cat": "调料香料"}, {"zh": "是拉差辣椒酱", "de": "Sriracha Hot Chili Sauce · 439064.7", "units": ["瓶", "箱"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_metro", "cat": "调料香料"}, {"zh": "米醋", "de": "MC Reisessig · 060136.9", "units": ["瓶", "箱"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_metro", "cat": "调料香料"}, {"zh": "柚子酱油", "de": "Kikkoman Ponzu Sauce · 325764.9", "units": ["瓶", "箱"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_metro", "cat": "调料香料"}, {"zh": "味噌（白）", "de": "Shinjyo Miso su hell · 655891.0", "units": ["KG", "盒"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_metro", "cat": "调料香料"}, {"zh": "炸油 10L", "de": "ARO Frittieröl 10L · 921377.8", "units": ["桶", "升(L)"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_metro", "cat": "大宗食材"}, {"zh": "蛋黄酱 10KG", "de": "ARO Salatmayonnaise 50% · 084985.1", "units": ["KG", "桶"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_metro", "cat": "大宗食材"}, {"zh": "番茄酱", "de": "Heinz Tomato Ketchup · 071786.8", "units": ["瓶", "箱"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_metro", "cat": "大宗食材"}, {"zh": "土豆粉 10KG", "de": "ARO Kartoffelmehl · 280228.8", "units": ["KG", "袋"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_metro", "cat": "大宗食材"}, {"zh": "香米 18KG", "de": "Royal Tiger Jasminreis · 061431.3", "units": ["KG", "袋"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_metro", "cat": "大宗食材"}, {"zh": "鸡粉", "de": "KN Chicken Powder Bouillon · 898380.1", "units": ["KG", "罐"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_metro", "cat": "大宗食材"}, {"zh": "全脂牛奶", "de": "H-Milch 3,5% · 863542.7", "units": ["升(L)", "箱"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "乳制品"}, {"zh": "炼乳", "de": "Dovgan Kondensmilch gez. · 458910.7", "units": ["罐", "箱"], "loc": "办公室库房", "freq": "every_2weeks", "sup": "sup_metro", "cat": "乳制品"}, {"zh": "鸡蛋（30个）", "de": "ARO 30er M braun · 349304.6", "units": ["个", "箱"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "乳制品"}, {"zh": "莫扎瑞拉丝", "de": "MC Mozzarella/Cheddar ger. · 000096.8", "units": ["KG", "包"], "loc": "蔬菜冷藏房", "freq": "every_week_14", "sup": "sup_metro", "cat": "乳制品"}, {"zh": "百香果汁", "de": "Happy Day Maracuja · 549308.5", "units": ["箱", "瓶"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_metro", "cat": "饮料糖浆"}, {"zh": "芒果汁", "de": "Happy Day Mango · 549303.6", "units": ["箱", "瓶"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_metro", "cat": "饮料糖浆"}, {"zh": "荔枝糖浆", "de": "Monin Litschi · 238787.6", "units": ["瓶", "箱"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_metro", "cat": "饮料糖浆"}, {"zh": "草莓糖浆", "de": "Rioba Strawberry Syrup · 824020.2", "units": ["瓶", "箱"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_metro", "cat": "饮料糖浆"}, {"zh": "芒果糖浆", "de": "Rioba Mango Syrup · 828982.9", "units": ["瓶", "箱"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_metro", "cat": "饮料糖浆"}, {"zh": "姜糖浆", "de": "Monin Ingwer · 498815.0", "units": ["瓶", "箱"], "loc": "办公室库房", "freq": "every_week_1", "sup": "sup_metro", "cat": "饮料糖浆"}, {"zh": "厨房纸", "de": "Bess Classic 3-LG · 134421.7", "units": ["包", "箱"], "loc": "厨房小房间", "freq": "every_2weeks", "sup": "sup_metro", "cat": "日用耗材"}, {"zh": "打包饭盒", "de": "Menuebox Bagasse 3GET · 222250.3", "units": ["包", "箱"], "loc": "厨房小房间", "freq": "every_2weeks", "sup": "sup_metro", "cat": "日用耗材"}];
 const DEFAULT_SUPPLIERS=[{"id": "sup_albers", "name": "Albers", "deadlineDay": 1, "deadlineHour": 12, "delivery": "周三", "color": "#ff3b30"}, {"id": "sup_kims", "name": "Kim's Mall", "deadlineDay": 3, "deadlineHour": 12, "delivery": "周四/五", "color": "#34c759"}, {"id": "sup_china1", "name": "中国供应商①", "deadlineDay": 1, "deadlineHour": 11, "delivery": "周四", "color": "#ff9500"}, {"id": "sup_china2", "name": "中国供应商②", "deadlineDay": 5, "deadlineHour": 11, "delivery": "-", "color": "#ff9500"}, {"id": "sup_metro", "name": "Metro", "deadlineDay": 1, "deadlineHour": 10, "delivery": "自采", "color": "#5856d6"}];
 const DEFAULT_STAFF=[{id:'s1',name:'高伟',pin:'1001',store:'both'},{id:'s2',name:'吴博',pin:'1002',store:'both'},{id:'s3',name:'肖克敏',pin:'1003',store:'both'},{id:'s4',name:'赵世斌',pin:'1004',store:'both'}];
-const REASONS=['已售罄','剩余极少','损耗/变质','其他'];
 function p2(n){return String(n).padStart(2,'0')}
 
-let items=[],suppliers=[],staffList=[],currentStaff=null,bossFlags={};
-let curStore='wetter',curView='mine',curSupId=null;
-let pinBuf='',selStaffId=null;
-const vals={},usel={};
-const emerSel={};
+// ── STATE ──────────────────────────────────────────────────────────
+let items=[],suppliers=[],aData={},staffData=[],bossFlags={},deliveries=[];
+let invW={},invB={};
+let dashView='wetter',dashFilter='all',adminSupF='all',flagsSupF='all';
+let selItem=null,isNewItem=false,selStaff=null,isNewStaff=false;
+let editingSupId=null;
+let scanData=[],scanImageBase64=null;
 
-// SUPABASE LOAD
-async function loadAll(){
-  try{const r=await sbGet(KEYS.suppliers);suppliers=r&&r.value?JSON.parse(r.value):DEFAULT_SUPPLIERS;}catch(e){suppliers=DEFAULT_SUPPLIERS;}
-  try{
-    const r=await sbGet(KEYS.items);
-    if(r&&r.value){
-      const loaded=JSON.parse(r.value);
-      items=Array.isArray(loaded)?loaded:DEFAULT_ITEMS;
-    } else {
-      items=DEFAULT_ITEMS;
-      // First run: save default items to Supabase
-      await sbSet(KEYS.items,JSON.stringify(DEFAULT_ITEMS));
-    }
-  }catch(e){items=DEFAULT_ITEMS;}
-  try{const r=await sbGet(KEYS.staff);staffList=r&&r.value?JSON.parse(r.value):DEFAULT_STAFF;}catch(e){staffList=DEFAULT_STAFF;}
-  try{const r=await sbGet(KEYS.flags);bossFlags=r&&r.value?JSON.parse(r.value):{};}catch(e){}
-}
-
-async function logAction(action,detail){
-  if(!currentStaff)return;
-  try{const r=await sbGet(KEYS.log);const logs=r&&r.value?JSON.parse(r.value):[];logs.unshift({staffId:currentStaff.id,staffName:currentStaff.name,store:curStore,action,detail,time:Date.now(),timeStr:new Date().toLocaleString('zh-CN')});if(logs.length>200)logs.splice(200);await sbSet(KEYS.log,JSON.stringify(logs));}catch(e){}
-}
-
-async function saveInv(store,supId,data){
-  await sbSet('kochi_inv_'+store+'_'+supId,JSON.stringify({ts:Date.now(),data}));
-}
-
-// CLOCK
+// ── CLOCK ──────────────────────────────────────────────────────────
 function tickClock(){
   const n=new Date();
-  document.getElementById('clk').textContent=p2(n.getHours())+':'+p2(n.getMinutes())+':'+p2(n.getSeconds());
-  document.getElementById('clk-date').textContent=n.getFullYear()+'年'+MM[n.getMonth()]+n.getDate()+'日 '+WDF[n.getDay()];
-  renderCountdowns();renderTasks();
+  document.getElementById('sclk').textContent=p2(n.getHours())+':'+p2(n.getMinutes())+':'+p2(n.getSeconds());
+  document.getElementById('sdate').textContent=n.getFullYear()+'年'+MM[n.getMonth()]+n.getDate()+'日 '+WDF[n.getDay()];
+  renderDL();
 }
 
-// COUNTDOWNS
-function nextDL(sup){
+// ── DEADLINES ──────────────────────────────────────────────────────
+function nextDL(dl){
   const now=new Date(),nx=new Date(now);
-  const day=sup.deadlineDay||1,hour=sup.deadlineHour||12;
-  let diff=(day-now.getDay()+7)%7;
-  if(diff===0){const c=new Date(now);c.setHours(hour,0,0,0);if(now>=c)diff=7;}
-  nx.setDate(now.getDate()+diff);nx.setHours(hour,0,0,0);return nx;
+  let diff=(dl.deadlineDay-now.getDay()+7)%7;
+  if(diff===0){const c=new Date(now);c.setHours(dl.deadlineHour,0,0,0);if(now>=c)diff=7;}
+  nx.setDate(now.getDate()+diff);nx.setHours(dl.deadlineHour,0,0,0);return nx;
 }
 function fmtMs(ms){if(ms<=0)return'已过期';const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000),s=Math.floor((ms%60000)/1000);if(h>48)return Math.floor(h/24)+'天'+h%24+'h';if(h>0)return h+'h'+p2(m)+'m';return p2(m)+'m'+p2(s)+'s';}
-function renderCountdowns(){
-  const strip=document.getElementById('cd-strip');if(!strip)return;strip.innerHTML='';
+function renderDL(){
+  const strip=document.getElementById('dl-strip');if(!strip)return;strip.innerHTML='';
   suppliers.forEach(sup=>{
+    if(!sup.deadlineDay&&sup.deadlineDay!==0)return;
     const nx=nextDL(sup),ms=nx-new Date(),hrs=ms/3600000;
     const cls=hrs<6?'red':hrs<24?'orange':'green';
-    const d=document.createElement('div');d.className='cd-card';
-    d.innerHTML='<div class="cd-name">'+sup.name+'</div><div class="cd-dl">'+WD[sup.deadlineDay||1]+' '+p2(sup.deadlineHour||12)+':00</div><div class="cd-ct '+cls+'">'+fmtMs(ms)+'</div>';
+    const d=document.createElement('div');d.className='dlc';
+    d.innerHTML='<div class="dlc-name">'+sup.name+'</div><div class="dlc-time">'+WD[sup.deadlineDay]+' '+p2(sup.deadlineHour)+':00</div><div class="dlc-ct '+cls+'">'+fmtMs(ms)+'</div>';
     strip.appendChild(d);
   });
 }
 
-// TODAY TASKS
-function renderTasks(){
-  const now=new Date(),wd=now.getDay(),hr=now.getHours();
-  const chips=document.getElementById('chips');chips.innerHTML='';
-  const tasks=[];
+// ── LOAD ───────────────────────────────────────────────────────────
+async function loadInv(){
+  const supIds=suppliers.map(s=>s.id);
+  for(const sid of supIds){
+    try{const r=await sbGet('kochi_inv_wetter_'+sid);if(r&&r.value){const d=JSON.parse(r.value);invW[sid]={ts:d.ts,data:d.data};}}catch(e){}
+    try{const r=await sbGet('kochi_inv_bismarck_'+sid);if(r&&r.value){const d=JSON.parse(r.value);invB[sid]={ts:d.ts,data:d.data};}}catch(e){}
+  }
+}
+
+async function loadAll(){
+  // Load suppliers first
+  try{const r=await sbGet(KEYS.suppliers);suppliers=r&&r.value?JSON.parse(r.value):DEFAULT_SUPPLIERS;if(!r||!r.value)await sbSet(KEYS.suppliers,JSON.stringify(DEFAULT_SUPPLIERS));}catch(e){suppliers=DEFAULT_SUPPLIERS;}
+  // Load items
+  try{const r=await sbGet(KEYS.items);items=r&&r.value?JSON.parse(r.value):DEFAULT_ITEMS;if(!r||!r.value)await sbSet(KEYS.items,JSON.stringify(DEFAULT_ITEMS));}catch(e){items=DEFAULT_ITEMS;}
+  // Load rest
+  try{const r=await sbGet(KEYS.alerts);if(r&&r.value)aData=JSON.parse(r.value);}catch(e){}
+  try{const r=await sbGet(KEYS.staff);staffData=r&&r.value?JSON.parse(r.value):DEFAULT_STAFF;if(!r||!r.value)await sbSet(KEYS.staff,JSON.stringify(DEFAULT_STAFF));}catch(e){staffData=DEFAULT_STAFF;}
+  try{const r=await sbGet(KEYS.flags);bossFlags=r&&r.value?JSON.parse(r.value):{};}catch(e){}
+  try{const r=await sbGet(KEYS.deliveries);deliveries=r&&r.value?JSON.parse(r.value):[];}catch(e){}
+  await loadInv();
+  renderAll();
+}
+
+async function saveItems(){await sbSet(KEYS.items,JSON.stringify(items));}
+async function saveSuppliers(){await sbSet(KEYS.suppliers,JSON.stringify(suppliers));}
+async function saveAlerts(){await sbSet(KEYS.alerts,JSON.stringify(aData));}
+async function saveStaff(){await sbSet(KEYS.staff,JSON.stringify(staffData));}
+async function saveFlags(){await sbSet(KEYS.flags,JSON.stringify(bossFlags));}
+async function saveDeliveries(){await sbSet(KEYS.deliveries,JSON.stringify(deliveries));}
+
+function renderAll(){
+  renderSupFilterBars();
+  renderAdminSupSelect();
+  renderDL();
+  renderDash();
+  renderAdmin();
+  renderFlagsPage();
+  renderSupList();
+  updateStaffDropdown();
+  renderDeliverySupSelect();
+  renderDeliveryList();
+  setTimeout(renderBatchAssign, 100);
+}
+
+// ── SUPPLIER HELPERS ───────────────────────────────────────────────
+function getSupName(id){const s=suppliers.find(x=>x.id===id);return s?s.name:id;}
+function getSupColor(id){const s=suppliers.find(x=>x.id===id);return s?s.color:'#8e8e93';}
+// Normalize sup field - always returns array
+function getSups(item){const s=item.sup;if(!s)return[];return Array.isArray(s)?s:[s];}
+function hasSup(item,supId){return getSups(item).includes(supId);}
+function supTags(item){return getSups(item).map(id=>'<span style="display:inline-flex;align-items:center;gap:3px;background:#f2f2f7;border:1px solid #e5e5ea;border-radius:5px;padding:2px 6px;font-size:11px;font-weight:600;color:#3c3c43;margin-right:3px"><span style="width:7px;height:7px;border-radius:50%;background:'+getSupColor(id)+';display:inline-block"></span>'+getSupName(id)+'</span>').join('');}
+
+function renderSupFilterBars(){
+  // Dashboard filter
+  const dash=document.getElementById('sup-filter-dash');
+  if(dash){
+    dash.innerHTML='<div class="sfb active" data-f="all">全部</div>'+
+      suppliers.map(s=>'<div class="sfb" data-f="'+s.id+'">'+s.name+'</div>').join('')+
+      '<div class="sfb" data-f="alert">⚠️ 仅预警</div>';
+    dash.querySelectorAll('.sfb').forEach(b=>{b.addEventListener('click',()=>{dash.querySelectorAll('.sfb').forEach(x=>x.classList.remove('active'));b.classList.add('active');dashFilter=b.dataset.f;renderDash();});});
+    // restore active
+    const active=dash.querySelector('[data-f="'+dashFilter+'"]');
+    if(active){dash.querySelectorAll('.sfb').forEach(x=>x.classList.remove('active'));active.classList.add('active');}
+  }
+  // Flags filter
+  const flags=document.getElementById('flags-sup-filter');
+  if(flags){
+    flags.innerHTML='<div class="sfb active" data-f="all">全部</div>'+
+      suppliers.map(s=>'<div class="sfb" data-f="'+s.id+'">'+s.name+'</div>').join('')+
+      '<div class="sfb" data-f="flagged">🔔 已标记</div>';
+    flags.querySelectorAll('.sfb').forEach(b=>{b.addEventListener('click',()=>{flags.querySelectorAll('.sfb').forEach(x=>x.classList.remove('active'));b.classList.add('active');flagsSupF=b.dataset.f;renderFlagsPage();});});
+  }
+  // Usage filter
+  const usage=document.getElementById('usage-sup-filter');
+  if(usage){
+    usage.innerHTML='<div class="sfb active" data-f="all">全部</div>'+
+      suppliers.map(s=>'<div class="sfb" data-f="'+s.id+'">'+s.name+'</div>').join('');
+  }
+  // Del filter
+  const delF=document.getElementById('del-filter-sup');
+  if(delF){
+    delF.innerHTML='<div class="sfb active" data-f="all">全部</div>'+
+      suppliers.map(s=>'<div class="sfb" data-f="'+s.id+'">'+s.name+'</div>').join('');
+    delF.querySelectorAll('.sfb').forEach(b=>{b.addEventListener('click',()=>{delF.querySelectorAll('.sfb').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderDeliveryList(b.dataset.f);});});
+  }
+}
+
+function renderAdminSupSelect(){
+  const sel=document.getElementById('asf');if(!sel)return;
+  const cur=sel.value;
+  sel.innerHTML='<option value="all">全部供应商</option>'+suppliers.map(s=>'<option value="'+s.id+'">'+s.name+'</option>').join('');
+  if(cur)sel.value=cur;
+}
+
+function renderDeliverySupSelect(){
+  const sel=document.getElementById('del-sup');if(!sel)return;
+  sel.innerHTML=suppliers.map(s=>'<option value="'+s.id+'">'+s.name+'</option>').join('');
+}
+
+// ── ALERT HELPERS ──────────────────────────────────────────────────
+function defAlert(supId,zh){
+  const sname=getSupName(supId).toLowerCase();
+  if(sname.includes('albers')){if(zh.includes('A5'))return{val:3,unit:'KG'};return{val:10,unit:'KG'};}
+  if(sname.includes('metro')){if(zh.includes('炸油'))return{val:3,unit:'桶'};if(zh.includes('烧酒')||zh.includes('真露')||zh.includes('顺和'))return{val:0.5,unit:'箱'};return{val:2,unit:'KG'};}
+  if(sname.includes('kim')){if(zh.includes('饺')||zh.includes('鲷鱼')||zh.includes('雪糕'))return{val:1,unit:'箱'};if(zh.includes('烧酒')||zh.includes('真露')||zh.includes('顺和'))return{val:0.5,unit:'箱'};return{val:1,unit:'箱'};}
+  return{val:2,unit:'KG'};
+}
+function getAl(supIdOrItem,zh){
+  // Accept either a supId string or an item object
+  if(typeof supIdOrItem==='object'){
+    const sups=getSups(supIdOrItem);
+    for(const sid of sups){const a=aData[sid+'|'+zh];if(a)return a;}
+    return defAlert(sups[0]||'',zh);
+  }
+  return aData[supIdOrItem+'|'+zh]||defAlert(supIdOrItem,zh);
+}
+
+// ── FREQUENCY LABEL ────────────────────────────────────────────────
+function freqLabel(freq){
+  const f=FREQ_OPTIONS.find(x=>x.id===freq);return f?f.label:'未设置';
+}
+function freqClass(freq){
+  const m={every_day:'freq-day',every_2days:'freq-2d',every_3days:'freq-3d',every_week_1:'freq-w1',every_week_14:'freq-w14',every_2weeks:'freq-2w'};
+  return m[freq]||'freq-2w';
+}
+
+// ── INVENTORY HELPERS ──────────────────────────────────────────────
+function getStock(store,supId,zh){
+  const inv=store==='wetter'?invW:invB;if(!inv[supId])return null;
+  let f=null;
+  (inv[supId].data||[]).forEach(c=>{(c.items||[]).forEach(it=>{if(it.zh===zh&&it.val!=='')f={val:parseFloat(it.val)||0,unit:it.unit};})});
+  return f;
+}
+function getBoth(supId,zh){
+  const w=getStock('wetter',supId,zh),b=getStock('bismarck',supId,zh);
+  if(!w&&!b)return null;
+  if(w&&b&&w.unit===b.unit)return{val:w.val+b.val,unit:w.unit,w,b};
+  return{val:null,unit:'单位不同',w,b};
+}
+
+// ── DASHBOARD ──────────────────────────────────────────────────────
+function renderDash(){
+  const wrap=document.getElementById('inv-wrap');if(!wrap)return;
+  let lastTs=null;
   suppliers.forEach(sup=>{
-    const dl=sup.deadlineDay||1,dlh=sup.deadlineHour||12;
-    const prevDay=(dl-1+7)%7;
-    if((wd===prevDay&&hr>=22)||(wd===dl&&hr<dlh)){
-      const urgent=wd===dl&&hr<dlh;
-      tasks.push({t:(urgent?'⚠️ ':'')+'盘点 '+sup.name,c:urgent?'urgent':'warn',supId:sup.id});
+    ['wetter','bismarck'].forEach(st=>{
+      const inv=st==='wetter'?invW:invB;
+      if(inv[sup.id]&&inv[sup.id].ts){const ts=new Date(inv[sup.id].ts);if(!lastTs||ts>lastTs)lastTs=ts;}
+    });
+  });
+  document.getElementById('last-updated').textContent=lastTs?'上次更新：'+lastTs.toLocaleString('zh-CN'):'尚无盘点数据';
+  const rows=[];
+  items.forEach(item=>{
+    const sup=item.sup;
+    if(dashFilter==='alert'){
+      const al=getAl(sup,item.zh);let show=false;
+      if(dashView==='both'){const st=getBoth(sup,item.zh);if(!st||st.val===null||st.val<al.val)show=true;}
+      else{const st=getStock(dashView,sup,item.zh);if(!st||st.val<al.val)show=true;}
+      if(!show)return;
     }
+    if(dashFilter!=='all'&&dashFilter!=='alert'&&!hasSup(item,dashFilter))return;
+    rows.push(item);
   });
-  if(!tasks.length)tasks.push({t:'今日暂无紧急任务',c:'muted'});
-  tasks.forEach(t=>{
-    const c=document.createElement('div');c.className='chip '+t.c;c.textContent=t.t;
-    if(t.supId){c.addEventListener('click',()=>switchSupplier(t.supId));c.addEventListener('touchend',e=>{e.preventDefault();switchSupplier(t.supId);});}
-    chips.appendChild(c);
-  });
-  // banner
-  const ba=document.getElementById('banner-area');ba.innerHTML='';
-  const urgentSups=suppliers.filter(sup=>{const dl=sup.deadlineDay||1,dlh=sup.deadlineHour||12,prevDay=(dl-1+7)%7;return(wd===prevDay&&hr>=22)||(wd===dl&&hr<dlh);});
-  if(urgentSups.length){
-    const b=document.createElement('div');b.className='banner show urgent';
-    b.innerHTML='<div class="banner-ttl">⚠️ 紧急提醒</div>'+urgentSups.map(s=>s.name+' 截单临近').join(' · ');
-    ba.appendChild(b);
-  }
-}
-
-// TABS - dynamic from suppliers
-function renderTabs(){
-  const tabs=document.getElementById('tabs');tabs.innerHTML='';
-  suppliers.forEach((sup,i)=>{
-    const btn=document.createElement('button');btn.type='button';btn.className='tab'+(i===0?' active':'');
-    btn.dataset.supId=sup.id;
-    btn.innerHTML=sup.name+'<span class="tab-sub">截单'+WD[sup.deadlineDay||1]+p2(sup.deadlineHour||12)+':00</span>';
-    tabs.appendChild(btn);
-  });
-  if(!curSupId&&suppliers.length)curSupId=suppliers[0].id;
-  // mark active tab
-  tabs.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.supId===curSupId));
-  tabs.addEventListener('click',e=>{const t=e.target.closest('.tab');if(!t)return;switchSupplier(t.dataset.supId);});
-  tabs.addEventListener('touchend',e=>{const t=e.target.closest('.tab');if(!t)return;e.preventDefault();switchSupplier(t.dataset.supId);});
-}
-
-function switchSupplier(supId){
-  curSupId=supId;
-  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.supId===supId));
-  renderList();
-}
-
-// FREQ CHECK
-function shouldShow(item){
-  // Used only for today's task chips - always show items in list
-  const fk=item.sup+'|'+item.zh;
-  if(bossFlags[fk]||bossFlags[getSups(item)[0]+'|'+item.zh])return true;
-  const freq=item.freq||'every_week_14';
-  const now=new Date(),wd=now.getDay();
-  if(freq==='every_day')return true;
-  if(freq==='every_2days')return true;
-  if(freq==='every_3days')return true;
-  if(freq==='every_week_1')return wd===1;
-  if(freq==='every_week_14')return wd===1||wd===4;
-  if(freq==='every_2weeks'){const weekNum=Math.floor(now.getTime()/(7*24*3600*1000));return wd===1&&weekNum%2===0;}
-  return true;
-}
-
-function isDueToday(item){
-  return shouldShow(item);
-}
-
-// RENDER LIST
-function renderList(){
-  const list=document.getElementById('list');list.innerHTML='';
-  let totalShown=0,done=0;
-  const statLbl=document.getElementById('s-total-lbl');
-  if(statLbl)statLbl.textContent=curView==='mine'?'我的任务':curView==='all'?'全部品项':'今日品项';
-
-  if(curView==='mine'){
-    const myItems=items.filter(item=>(item.assignees||[]).includes(currentStaff&&currentStaff.id));
-    if(!myItems.length){
-      const d=document.createElement('div');
-      d.style.cssText='text-align:center;padding:40px 20px;color:#8e8e93';
-      d.innerHTML='<div style="font-size:40px;margin-bottom:10px">✅</div>'+
-        '<div style="font-size:15px;font-weight:600;color:#3c3c43;margin-bottom:6px">暂无分配给你的品项</div>'+
-        '<div style="font-size:13px">老板还未分配任务，可切换到「全部品项」查看</div>';
-      list.appendChild(d);
-    } else {
-      const byLoc={};
-      myItems.forEach(item=>{
-        const loc=item.loc||'办公室库房';
-        if(!byLoc[loc])byLoc[loc]=[];
-        byLoc[loc].push(item);
-      });
-      LOC_ORDER.forEach(loc=>{
-        const its=byLoc[loc];if(!its||!its.length)return;
-        const isDue=its.some(i=>isDueToday(i));
-        const hdr=document.createElement('div');hdr.className='sec-hdr';
-        hdr.innerHTML='<span class="loc-dot" style="background:'+(LOC_COLORS[loc]||'#8e8e93')+'"></span>'+loc+
-          ' <span style="color:#c7c7cc;font-size:10px">('+its.length+'项)</span>'+
-          (isDue?'<span style="margin-left:6px;font-size:10px;background:#edfbf1;color:#1c7c3e;border-radius:4px;padding:1px 5px;font-weight:700">今日</span>':'');
-        list.appendChild(hdr);
-        its.forEach(item=>{
-          totalShown++;
-          const sid=getSups(item)[0]||'';
-          const k=curStore+'|'+sid+'|'+item.zh;
-          if((vals[k]||'')!=='')done++;
-          appendCard(list,item,k);
-        });
-      });
+  if(!rows.length){wrap.innerHTML='<div class="no-data">暂无符合条件的品项</div>';return;}
+  let alertCnt=0;
+  let h='<div style="overflow-x:auto"><table class="tb"><thead><tr><th>品名</th><th>位置</th><th>频率</th><th>必盘</th><th>供应商</th>';
+  if(dashView==='wetter'||dashView==='both')h+='<th>Wetter</th>';
+  if(dashView==='bismarck'||dashView==='both')h+='<th>Bismarck</th>';
+  if(dashView==='both')h+='<th>合计</th>';
+  h+='<th>负责人</th><th>预警</th><th>状态</th></tr></thead><tbody>';
+  rows.forEach(item=>{
+    const sups=getSups(item),sup=sups[0]||'',al=getAl(item,item.zh);
+    const w=getStock('wetter',sup,item.zh),b=getStock('bismarck',sup,item.zh),both=getBoth(sup,item.zh);
+    const fk=sup+'|'+item.zh,isFlagged=bossFlags[fk];
+    const color=getSupColor(sup);
+    function sc(st){if(!st)return'<td class="sc empty">未盘点</td>';const cls=st.val<al.val?'alert':st.val<al.val*1.5?'warn':'ok';return'<td class="sc '+cls+'">'+st.val+' '+st.unit+'</td>';}
+    function sb(){
+      const st=dashView==='both'?both:dashView==='wetter'?w:b;
+      if(!st)return'<span class="bdg gray">待盘点</span>';
+      if(st.val===null)return'<span class="bdg orange">单位不同</span>';
+      if(st.val<al.val){alertCnt++;return'<span class="bdg red">⚠ 低于预警</span>';}
+      if(st.val<al.val*1.5)return'<span class="bdg orange">偏低</span>';
+      return'<span class="bdg green">正常</span>';
     }
-  } else if(curView==='location'){
-    const byLoc={};
-    items.forEach(item=>{
-      const loc=item.loc||'办公室库房';
-      if(!byLoc[loc])byLoc[loc]=[];
-      byLoc[loc].push(item);
+    const locDot=item.loc?'<span class="loc-dot" style="background:'+(LOC_COLORS[item.loc]||'#8e8e93')+'"></span>':'';
+    const freqBdg='<span class="freq-bdg '+freqClass(item.freq)+'">'+freqLabel(item.freq)+'</span>';
+    const flagBtn='<button type="button" class="flag-btn '+(isFlagged?'on':'off')+'" data-sup="'+sup+'" data-zh="'+encodeURIComponent(item.zh)+'">'+(isFlagged?'🔔':'标记')+'</button>';
+    const supDot='<span class="sup-dot" style="background:'+color+'"></span>';
+    h+='<tr><td><div class="izc">'+item.zh+'</div><div class="idc">'+item.de+'</div>'+(item.spec?'<div style="font-size:10px;color:#5856d6;margin-top:2px;font-weight:500">'+item.spec+'</div>':'')+'</td>'+
+       '<td>'+locDot+(item.loc||'')+'</td><td>'+freqBdg+'</td><td>'+flagBtn+'</td>'+
+       '<td>'+supTags(item)+'</td>';
+    if(dashView==='wetter'||dashView==='both')h+=sc(w);
+    if(dashView==='bismarck'||dashView==='both')h+=sc(b);
+    if(dashView==='both'){
+      if(!both)h+='<td class="sc empty">-</td>';
+      else if(both.val===null)h+='<td class="sc warn">-</td>';
+      else{const cls=both.val<al.val?'alert':both.val<al.val*1.5?'warn':'ok';h+='<td class="sc '+cls+'">'+both.val.toFixed(1)+' '+both.unit+'</td>';}
+    }
+    const aNames=(item.assignees||[]).map(id=>{const s=staffData.find(x=>x.id===id);return s?s.name:'';}).filter(Boolean).join('、')||'<span style="color:#c7c7cc">未分配</span>';
+    h+='<td style="font-size:12px;color:#3c3c43">'+aNames+'</td><td style="color:#8e8e93;font-size:12px">'+al.val+' '+al.unit+'</td><td>'+sb()+'</td></tr>';
+  });
+  h+='</tbody></table></div>';
+  wrap.innerHTML=h;
+  const badge=document.getElementById('alert-badge');
+  if(alertCnt>0){badge.textContent=alertCnt;badge.style.display='inline-block';}else{badge.style.display='none';}
+  wrap.querySelectorAll('.flag-btn').forEach(btn=>{
+    btn.addEventListener('click',async()=>{
+      const sup=btn.dataset.sup,zh=decodeURIComponent(btn.dataset.zh),fk=sup+'|'+zh;
+      if(bossFlags[fk])delete bossFlags[fk];else bossFlags[fk]=true;
+      await saveFlags();renderDash();renderFlagsPage();
     });
-    LOC_ORDER.forEach(loc=>{
-      const its=byLoc[loc];if(!its||!its.length)return;
-      const hdr=document.createElement('div');hdr.className='sec-hdr';
-      hdr.innerHTML='<span class="loc-dot" style="background:'+(LOC_COLORS[loc]||'#8e8e93')+'"></span>'+loc+' <span style="color:#c7c7cc;font-size:10px">('+its.length+')</span>';
-      list.appendChild(hdr);
-      its.forEach(item=>{totalShown++;const k=curStore+'|'+item.sup+'|'+item.zh;if((vals[k]||'')!=='')done++;appendCard(list,item,k);});
+  });
+  renderPurchase();
+}
+
+// ── PURCHASE ───────────────────────────────────────────────────────
+function renderPurchase(){
+  const wrap=document.getElementById('purchase-wrap');if(!wrap)return;
+  const bySup={};
+  suppliers.forEach(s=>bySup[s.id]=[]);
+  items.forEach(item=>{
+    const sups=getSups(item);
+    const primSup=sups[0];if(!primSup)return;
+    const al=getAl(primSup,item.zh),both=getBoth(primSup,item.zh);if(!both)return;
+    const wv=both.w?both.w.val:0,bv=both.b?both.b.val:0,total=wv+bv;
+    if(total>=al.val)return;
+    const need=Math.ceil((al.val*2-total)*10)/10;
+    // Show under ALL associated suppliers so boss can choose where to order
+    sups.forEach(sid=>{
+      if(!bySup[sid])bySup[sid]=[];
+      bySup[sid].push({zh:item.zh,de:item.de,spec:item.spec||'',total,need,unit:both.unit||al.unit,alert:al.val,sups:sups.map(id=>getSupName(id)).join(' / ')});
     });
-  } else if(curView==='all'){
-    // Group by supplier
-    suppliers.forEach(sup=>{
-      const its=items.filter(i=>i.sup===sup.id);
-      if(!its.length)return;
-      // Group by cat
-      const byCat={};
-      its.forEach(i=>{if(!byCat[i.cat])byCat[i.cat]=[];byCat[i.cat].push(i);});
-      Object.keys(byCat).forEach(cat=>{
-        const hdr=document.createElement('div');hdr.className='sec-hdr';hdr.textContent=sup.name+' · '+cat;list.appendChild(hdr);
-        byCat[cat].forEach(item=>{totalShown++;const k=curStore+'|'+item.sup+'|'+item.zh;if((vals[k]||'')!=='')done++;appendCard(list,item,k);});
-      });
+  });
+  let h='';
+  suppliers.forEach(sup=>{
+    const its=bySup[sup.id];if(!its||!its.length)return;
+    h+='<div class="card"><div class="ct">'+sup.name+' <span>'+its.length+'个品项需采购</span></div>'+
+       '<div style="overflow-x:auto"><table class="tb"><thead><tr><th>品名</th><th>两店合计</th><th>预警线</th><th>建议采购量</th></tr></thead><tbody>';
+    its.forEach(it=>{const multiSup=it.sups&&it.sups.includes('/')?' <span style="font-size:10px;color:#8e8e93">(可选: '+it.sups+')</span>':'';h+='<tr><td><div class="izc">'+it.zh+multiSup+'</div><div class="idc">'+it.de+'</div>'+(it.spec?'<div style="font-size:10px;color:#5856d6;margin-top:2px;font-weight:500">📦 '+it.spec+'</div>':'')+'</td><td class="sc alert">'+it.total+' '+it.unit+'</td><td style="color:#8e8e93">'+it.alert+' '+it.unit+'</td><td style="font-weight:700;color:#5856d6">≥ '+it.need+' '+it.unit+'</td></tr>';});
+    h+='</tbody></table></div></div>';
+  });
+  if(!h)h='<div class="card"><div class="es"><div class="es-icon">✅</div><div class="es-text">所有品项库存充足</div></div></div>';
+  wrap.innerHTML=h;
+}
+
+// ── DELIVERY ───────────────────────────────────────────────────────
+function renderDeliveryList(filter){
+  const wrap=document.getElementById('delivery-list');if(!wrap)return;
+  let list=deliveries;
+  if(filter&&filter!=='all')list=list.filter(d=>d.supId===filter);
+  if(!list.length){wrap.innerHTML='<div class="no-data">暂无来货记录</div>';return;}
+  wrap.innerHTML=list.slice(0,30).map(d=>{
+    const sup=suppliers.find(s=>s.id===d.supId);
+    const supName=sup?sup.name:d.supId;
+    const storeLabel=d.store==='wetter'?'Wetter':'Bismarck';
+    const itemList=(d.items||[]).map(it=>it.zh+' '+it.val+it.unit).join('、');
+    return'<div class="del-card"><div class="del-hdr"><div><div class="del-sup">'+supName+' · '+storeLabel+'</div><div class="del-time">'+d.timeStr+'</div></div><span class="del-status confirmed">已录入</span></div><div class="del-items">'+itemList+'</div>';
+  }).join('');
+}
+
+// ── AI DELIVERY SCAN ───────────────────────────────────────────────
+document.getElementById('upload-zone').addEventListener('click',()=>document.getElementById('upload-input').click());
+document.getElementById('upload-input').addEventListener('change',e=>{
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    scanImageBase64=ev.target.result;
+    document.getElementById('scan-img').src=ev.target.result;
+    document.getElementById('scan-preview').style.display='block';
+  };
+  reader.readAsDataURL(file);
+});
+
+document.getElementById('scan-btn').addEventListener('click',async()=>{
+  if(!scanImageBase64)return;
+  const btn=document.getElementById('scan-btn');
+  btn.textContent='🤖 识别中...';btn.disabled=true;
+  try{
+    const supId=document.getElementById('del-sup').value;
+    const supItems=items.filter(i=>i.sup===supId);
+    const itemNames=supItems.map(i=>i.zh+'('+i.de+')').join('\n');
+    const base64Data=scanImageBase64.split(',')[1];
+    const mediaType=scanImageBase64.startsWith('data:image/png')?'image/png':'image/jpeg';
+    const response=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        messages:[{
+          role:'user',
+          content:[
+            {type:'image',source:{type:'base64',media_type:mediaType,data:base64Data}},
+            {type:'text',text:'Dies ist ein deutschsprachiger Lieferschein. Bitte identifiziere alle Produkte und Mengen.\n\nBekannte Produktliste:\n'+itemNames+'\n\nBitte antworte NUR mit einem JSON-Array in diesem Format, ohne Erklärungen:\n[{"zh":"中文名称","val":数量,"unit":"单位"}]\n\nWenn du ein Produkt nicht in der Liste findest, verwende den deutschen Namen als zh-Wert. Mengen als Zahl ohne Einheit.'}
+          ]
+        }]
+      })
     });
-  } else {
-    // By supplier tab
-    const supItems=items.filter(i=>hasSup(i,curSupId));
-    const byCat={};
-    supItems.forEach(i=>{if(!byCat[i.cat])byCat[i.cat]=[];byCat[i.cat].push(i);});
-    Object.keys(byCat).forEach(cat=>{
-      const its=byCat[cat];
-      const hdr=document.createElement('div');hdr.className='sec-hdr';
-      const loc=its[0]&&its[0].loc?its[0].loc:'';
-      hdr.innerHTML=(loc?'<span class="loc-dot" style="background:'+(LOC_COLORS[loc]||'#8e8e93')+'"></span>':'')+cat;
-      list.appendChild(hdr);
-      its.forEach(item=>{totalShown++;const k=curStore+'|'+item.sup+'|'+item.zh;if((vals[k]||'')!=='')done++;appendCard(list,item,k);});
+    const data=await response.json();
+    const text=data.content.map(c=>c.text||'').join('');
+    const clean=text.replace(/```json|```/g,'').trim();
+    let parsed=[];
+    try{parsed=JSON.parse(clean);}catch(e){parsed=[];}
+    // Match with known items
+    scanData=parsed.map(p=>{
+      const matched=supItems.find(i=>i.zh===p.zh||i.de.toLowerCase().includes(p.zh.toLowerCase()));
+      return{zh:matched?matched.zh:p.zh,de:matched?matched.de:'',val:p.val||0,unit:p.unit||(matched?matched.units[0]:'KG'),matched:!!matched};
     });
+    renderScanResult();
+  }catch(e){
+    alert('识别失败：'+e.message);
+  }finally{
+    btn.textContent='🤖 AI识别送货单';btn.disabled=false;
   }
+});
 
-  document.getElementById('s-total').textContent=totalShown;
-  document.getElementById('s-done').textContent=done;
-  const pct=totalShown>0?Math.round(done/totalShown*100):0;
-  document.getElementById('s-pct').textContent=pct+'%';
-  document.getElementById('prog').style.width=pct+'%';
-  bindItemEvents();
+function renderScanResult(){
+  const wrap=document.getElementById('scan-result-wrap');
+  const items_el=document.getElementById('scan-items');
+  wrap.style.display='block';
+  if(!scanData.length){items_el.innerHTML='<div class="no-data">未识别到任何品项，请检查图片</div>';return;}
+  items_el.innerHTML=scanData.map((it,i)=>
+    '<div class="scan-item-row">'+
+    '<div class="scan-zh" style="'+(it.matched?'':'color:#ff9500')+'">'+(it.matched?'':'⚠ ')+it.zh+'</div>'+
+    '<input class="scan-val" type="number" min="0" step="0.01" value="'+it.val+'" data-idx="'+i+'">'+
+    '<div class="scan-unit">'+it.unit+'</div>'+
+    '<button type="button" class="scan-del" data-idx="'+i+'">删除</button>'+
+    '</div>'
+  ).join('');
+  items_el.querySelectorAll('.scan-val').forEach(inp=>{inp.addEventListener('input',()=>{scanData[inp.dataset.idx].val=parseFloat(inp.value)||0;});});
+  items_el.querySelectorAll('.scan-del').forEach(btn=>{
+    btn.addEventListener('click',()=>{scanData.splice(parseInt(btn.dataset.idx),1);renderScanResult();});
+  });
 }
 
-function appendCard(list,item,key){
-  const units=item.units||['KG'];
-  if(!usel[key])usel[key]=units[0];
-  const val=vals[key]||'';
-  const isBossFlag=bossFlags[getSups(item)[0]+'|'+item.zh]||bossFlags[item.sup+'|'+item.zh]||false;
-  const bossTag=isBossFlag?'<span class="boss-tag">老板要求</span>':'';
-  const todayTag=isDueToday(item)&&!isBossFlag?'<span class="today-tag">今日</span>':'';
-  const card=document.createElement('div');card.className='item-card'+(val!==''?' done':'');
-  // Unit selector: dropdown if multiple units, otherwise plain text
-  const unitCtrl=units.length>1
-    ?'<select class="unit-sel'+(val!==''?' filled':'')+'" data-key="'+key+'">'+units.map(u=>'<option'+(u===usel[key]?' selected':'')+'>'+u+'</option>').join('')+'</select>'
-    :'<span style="font-size:12px;color:#8e8e93">'+units[0]+'</span>';
-  card.innerHTML=
-    '<div class="chk'+(val!==''?' on':'')+'" id="c'+key.replace(/[|]/g,'_')+'"></div>'+
-    '<div class="item-info"><div class="item-zh">'+item.zh+bossTag+todayTag+'</div><div class="item-de">'+item.de+'</div>' +(item.spec?'<div style="font-size:10px;color:#5856d6;margin-top:1px;font-weight:500">'+item.spec+'</div>':'')+'</div>'+
-    '<div class="qty-wrap"><input class="qty-inp'+(val!==''?' filled':'')+'" type="number" min="0" step="0.01" inputmode="decimal" placeholder="数量" value="'+val+'" data-key="'+key+'">'+unitCtrl+'</div>';
-  list.appendChild(card);
+document.getElementById('cancel-scan-btn').addEventListener('click',()=>{
+  document.getElementById('scan-result-wrap').style.display='none';
+  document.getElementById('scan-preview').style.display='none';
+  scanData=[];scanImageBase64=null;
+  document.getElementById('upload-input').value='';
+});
+
+document.getElementById('confirm-delivery-btn').addEventListener('click',async()=>{
+  if(!scanData.length){alert('没有可录入的品项');return;}
+  const store=document.getElementById('del-store').value;
+  const supId=document.getElementById('del-sup').value;
+  const now=new Date();
+  const record={
+    id:'del_'+now.getTime(),ts:now.getTime(),
+    timeStr:now.toLocaleString('zh-CN'),
+    store,supId,confirmedBy:'boss',
+    items:scanData.filter(i=>i.val>0).map(i=>{return{zh:i.zh,val:i.val,unit:i.unit};})
+  };
+  deliveries.unshift(record);
+  if(deliveries.length>200)deliveries.splice(200);
+  await saveDeliveries();
+  document.getElementById('scan-result-wrap').style.display='none';
+  document.getElementById('scan-preview').style.display='none';
+  scanData=[];scanImageBase64=null;
+  document.getElementById('upload-input').value='';
+  renderDeliveryList();
+  alert('来货记录已录入，共'+record.items.length+'个品项');
+});
+
+// ── EMERGENCY ──────────────────────────────────────────────────────
+async function loadEmergency(){
+  try{
+    const r=await sbGet(KEYS.emer);const list=r&&r.value?JSON.parse(r.value):[];
+    const badge=document.getElementById('emer-badge');
+    if(list.length>0){badge.textContent=list.length;badge.style.display='inline-block';}else{badge.style.display='none';}
+    const wrap=document.getElementById('emer-wrap');
+    if(!list.length){wrap.innerHTML='<div class="es"><div class="es-icon">✅</div><div class="es-text">暂无告急通知</div></div>';return;}
+    wrap.innerHTML=list.map(n=>'<div class="enc"><div class="enc-hdr"><div class="enc-store">🚨 '+n.store+'</div><div class="enc-time">'+n.timeStr+'</div></div>'+(n.items||[]).map(it=>'<div class="enc-item"><span class="enc-zh">'+it.zh+'</span><span class="enc-reason">'+it.reason+'</span>'+(it.note?'<div class="enc-note">'+it.note+'</div>':'')+'</div>').join('')+'</div>').join('');
+  }catch(e){}
 }
 
-function bindItemEvents(){
-  const list=document.getElementById('list');
-  list.querySelectorAll('.qty-inp').forEach(inp=>{
-    inp.addEventListener('input',()=>{
-      const k=inp.dataset.key;vals[k]=inp.value.trim();
-      const card=inp.closest('.item-card');
-      const chk=document.getElementById('c'+k.replace(/[|]/g,'_'));
-      const has=vals[k]!=='';
-      card.classList.toggle('done',has);inp.classList.toggle('filled',has);
-      if(chk)chk.classList.toggle('on',has);
-      // also update unit selector color
-      const usel_el=card.querySelector('.unit-sel');
-      if(usel_el)usel_el.classList.toggle('filled',has);
-      updateStats();
+// ── FLAGS ──────────────────────────────────────────────────────────
+function renderFlagsPage(){
+  const wrap=document.getElementById('flags-wrap');if(!wrap)return;
+  if(!items.length){wrap.innerHTML='<div class="no-data">数据加载中...</div>';setTimeout(()=>{if(items.length)renderFlagsPage();},1500);return;}
+  let rows=items;
+  if(flagsSupF==='flagged')rows=rows.filter(i=>bossFlags[i.sup+'|'+i.zh]);
+  else if(flagsSupF!=='all')rows=rows.filter(i=>hasSup(i,flagsSupF));
+  if(!rows.length){wrap.innerHTML='<div class="no-data">'+(flagsSupF==='flagged'?'暂无标记品项':'暂无品项')+'</div>';return;}
+  let h='<div style="overflow-x:auto"><table class="tb"><thead><tr><th>品名</th><th>供应商</th><th>位置</th><th>默认频率</th><th>状态</th><th>操作</th></tr></thead><tbody>';
+  rows.forEach(item=>{
+    const fk=item.sup+'|'+item.zh,isFlagged=bossFlags[fk];
+    const locDot=item.loc?'<span class="loc-dot" style="background:'+(LOC_COLORS[item.loc]||'#8e8e93')+'"></span>':'';
+    const supDot='<span class="sup-dot" style="background:'+getSupColor(item.sup)+'"></span>';
+    h+='<tr><td><div class="izc">'+item.zh+'</div><div class="idc">'+item.de+'</div>'+(item.spec?'<div style="font-size:10px;color:#5856d6;margin-top:2px;font-weight:500">'+item.spec+'</div>':'')+'</td>'+
+       '<td>'+supTags(item)+'</td>'+
+       '<td>'+locDot+(item.loc||'')+'</td>'+
+       '<td><span class="freq-bdg '+freqClass(item.freq)+'">'+freqLabel(item.freq)+'</span></td>'+
+       '<td>'+(isFlagged?'<span class="bdg orange">🔔 本次必盘</span>':'<span class="bdg gray">正常</span>')+'</td>'+
+       '<td><button type="button" class="flag-btn '+(isFlagged?'on':'off')+'" data-sup="'+item.sup+'" data-zh="'+encodeURIComponent(item.zh)+'">'+(isFlagged?'取消标记':'标记必盘')+'</button></td></tr>';
+  });
+  h+='</tbody></table></div>';
+  wrap.innerHTML=h;
+  wrap.querySelectorAll('.flag-btn').forEach(btn=>{
+    btn.addEventListener('click',async()=>{
+      const sup=btn.dataset.sup,zh=decodeURIComponent(btn.dataset.zh),fk=sup+'|'+zh;
+      if(bossFlags[fk])delete bossFlags[fk];else bossFlags[fk]=true;
+      await saveFlags();renderFlagsPage();renderDash();
     });
   });
-  list.querySelectorAll('.unit-sel').forEach(sel=>{
-    sel.addEventListener('change',()=>{usel[sel.dataset.key]=sel.value;});
+}
+
+// ── LOGS ──────────────────────────────────────────────────────────
+async function loadLogs(){
+  const wrap=document.getElementById('logs-wrap');if(!wrap)return;
+  wrap.innerHTML='<div class="no-data">加载中...</div>';
+  try{
+    const r=await sbGet(KEYS.log);const logs=r&&r.value?JSON.parse(r.value):[];
+    const fs=document.getElementById('log-fs').value,fa=document.getElementById('log-fa').value;
+    const filtered=logs.filter(l=>{if(fs!=='all'&&l.staffId!==fs)return false;if(fa!=='all'&&l.action!==fa)return false;return true;});
+    if(!filtered.length){wrap.innerHTML='<div class="no-data">暂无操作记录</div>';return;}
+    const SM={wetter:'Wetter',bismarck:'Bismarck'};
+    const ICON={登录:'🔑',盘点提交:'📋',告急上报:'🚨'};
+    wrap.innerHTML=filtered.map(l=>'<div class="log-row"><div class="log-icon">'+(ICON[l.action]||'📌')+'</div><div style="flex:1"><div class="log-name">'+l.staffName+(l.store?'<span class="log-store">'+(SM[l.store]||l.store)+'</span>':'')+'</div><div class="log-detail">'+l.action+'：'+l.detail+'</div><div class="log-time">'+l.timeStr+'</div></div></div>').join('');
+  }catch(e){wrap.innerHTML='<div class="no-data">加载失败</div>';}
+}
+
+function updateStaffDropdown(){
+  const sel=document.getElementById('log-fs');if(!sel)return;
+  sel.innerHTML='<option value="all">全部员工</option>';
+  staffData.forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=s.name;sel.appendChild(o);});
+}
+
+// ── STAFF ─────────────────────────────────────────────────────────
+function renderStaffTable(){
+  const wrap=document.getElementById('staff-tbl-wrap');if(!wrap)return;
+  const SMAP={both:'两店',wetter:'Wetter',bismarck:'Bismarck'};
+  let h='<div style="overflow-x:auto"><table class="stf-tb"><thead><tr><th>姓名</th><th>PIN码</th><th>门店</th><th>操作</th></tr></thead><tbody>';
+  staffData.forEach(s=>{h+='<tr><td><strong>'+s.name+'</strong></td><td><span class="pin-show">'+s.pin+'</span></td><td><span class="store-bdg">'+(SMAP[s.store]||'两店')+'</span></td><td><button type="button" class="edit-s" data-id="'+s.id+'">编辑</button></td></tr>';});
+  h+='</tbody></table></div>';
+  wrap.innerHTML=h;
+  wrap.querySelectorAll('.edit-s').forEach(btn=>{btn.addEventListener('click',()=>{selStaff=staffData.find(x=>x.id===btn.dataset.id);isNewStaff=false;renderStaffEdit();});});
+}
+
+function renderStaffEdit(){
+  const panel=document.getElementById('staff-edit-panel');
+  if(isNewStaff){
+    panel.innerHTML='<div class="ef"><div style="font-size:14px;font-weight:700;margin-bottom:12px">添加员工</div>'+
+      '<div class="fr"><label class="fl">姓名 *</label><input class="fi" id="sf-name" placeholder="例：张三"></div>'+
+      '<div class="fr"><label class="fl">PIN码（4位）*</label><input class="fi" id="sf-pin" type="text" maxlength="4" placeholder="例：1005"></div>'+
+      '<div class="fr"><label class="fl">门店权限</label><select class="fi" id="sf-store"><option value="both">两店都可以</option><option value="wetter">仅 Kochi Wetter</option><option value="bismarck">仅 Kochi Bismarck</option></select></div>'+
+      '<div class="br"><button type="button" class="bp" id="sv-staff">保存</button><button type="button" class="bs" id="cl-staff">取消</button></div></div>';
+    document.getElementById('sv-staff').addEventListener('click',saveNewStaff);
+    document.getElementById('cl-staff').addEventListener('click',()=>{isNewStaff=false;selStaff=null;panel.innerHTML='<div class="ef"><div class="es"><div class="es-icon">👈</div><div class="es-text">选择左侧员工编辑</div></div></div>';});
+    return;
+  }
+  if(!selStaff)return;
+  panel.innerHTML='<div class="ef"><div style="font-size:14px;font-weight:700;margin-bottom:12px">编辑：'+selStaff.name+'</div>'+
+    '<div class="fr"><label class="fl">姓名 *</label><input class="fi" id="sf-name" value="'+selStaff.name+'"></div>'+
+    '<div class="fr"><label class="fl">重置PIN码（留空不改）</label><input class="fi" id="sf-pin" type="text" maxlength="4" placeholder="输入新PIN码"></div>'+
+    '<div class="fr"><label class="fl">门店权限</label><select class="fi" id="sf-store"><option value="both"'+(selStaff.store==='both'?' selected':'')+'>两店都可以</option><option value="wetter"'+(selStaff.store==='wetter'?' selected':'')+'>仅 Kochi Wetter</option><option value="bismarck"'+(selStaff.store==='bismarck'?' selected':'')+'>仅 Kochi Bismarck</option></select></div>'+
+    '<div class="br"><button type="button" class="bp" id="sv-staff">保存修改</button><button type="button" class="bd" id="dl-staff">删除</button></div></div>';
+  document.getElementById('sv-staff').addEventListener('click',saveEditStaff);
+  document.getElementById('dl-staff').addEventListener('click',deleteStaff);
+}
+async function saveNewStaff(){
+  const name=document.getElementById('sf-name').value.trim(),pin=document.getElementById('sf-pin').value.trim(),store=document.getElementById('sf-store').value;
+  if(!name||!pin){alert('请填写姓名和PIN码');return;}if(pin.length!==4){alert('PIN码必须4位');return;}
+  staffData.push({id:'s'+Date.now(),name,pin,store});await saveStaff();
+  isNewStaff=false;document.getElementById('staff-edit-panel').innerHTML='<div class="ef"><div class="es"><div class="es-icon">✅</div><div class="es-text">员工已添加 PIN: '+pin+'</div></div></div>';
+  renderStaffTable();updateStaffDropdown();
+}
+async function saveEditStaff(){
+  const name=document.getElementById('sf-name').value.trim(),pin=document.getElementById('sf-pin').value.trim(),store=document.getElementById('sf-store').value;
+  if(!name){alert('请填写姓名');return;}if(pin&&pin.length!==4){alert('PIN码必须4位');return;}
+  const s=staffData.find(x=>x.id===selStaff.id);if(!s)return;
+  s.name=name;s.store=store;if(pin)s.pin=pin;
+  await saveStaff();renderStaffTable();updateStaffDropdown();alert('保存成功'+(pin?'，新PIN码：'+pin:''));
+}
+async function deleteStaff(){
+  if(!confirm('确定删除员工 '+selStaff.name+'?'))return;
+  staffData=staffData.filter(x=>x.id!==selStaff.id);await saveStaff();selStaff=null;
+  document.getElementById('staff-edit-panel').innerHTML='<div class="ef"><div class="es"><div class="es-icon">🗑️</div><div class="es-text">员工已删除</div></div></div>';
+  renderStaffTable();updateStaffDropdown();
+}
+
+// ── SUPPLIERS ─────────────────────────────────────────────────────
+function renderSupList(){
+  const wrap=document.getElementById('sup-list');if(!wrap)return;
+  const WDN=['周日','周一','周二','周三','周四','周五','周六'];
+  wrap.innerHTML=suppliers.map(s=>'<div class="sup-card">'+
+    '<div class="sup-color" style="background:'+s.color+'"></div>'+
+    '<div class="sup-info"><div class="sup-name">'+s.name+'</div>'+
+    '<div class="sup-detail">截单：'+WDN[s.deadlineDay||1]+' '+p2(s.deadlineHour||12)+':00 · 送货：'+(s.delivery||'-')+'</div></div>'+
+    '<div class="sup-actions">'+
+    '<button type="button" class="sup-edit-btn" data-id="'+s.id+'">编辑</button>'+
+    '<button type="button" class="sup-del-btn" data-id="'+s.id+'">删除</button>'+
+    '</div></div>'
+  ).join('');
+  wrap.querySelectorAll('.sup-edit-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>openSupModal(btn.dataset.id));
+  });
+  wrap.querySelectorAll('.sup-del-btn').forEach(btn=>{
+    btn.addEventListener('click',async()=>{
+      const s=suppliers.find(x=>x.id===btn.dataset.id);if(!s)return;
+      if(!confirm('确定删除供应商"'+s.name+'"？相关品项的供应商字段不会自动清除。'))return;
+      suppliers=suppliers.filter(x=>x.id!==btn.dataset.id);
+      await saveSuppliers();renderSupList();renderSupFilterBars();renderAdminSupSelect();renderDL();
+    });
   });
 }
 
-function updateStats(){
-  let total=0,done=0;
-  document.getElementById('list').querySelectorAll('.qty-inp').forEach(inp=>{total++;if((vals[inp.dataset.key]||'')!=='')done++;});
-  document.getElementById('s-total').textContent=total;
-  document.getElementById('s-done').textContent=done;
-  const pct=total>0?Math.round(done/total*100):0;
-  document.getElementById('s-pct').textContent=pct+'%';
-  document.getElementById('prog').style.width=pct+'%';
-}
-
-// LOGIN
-function renderStaffList(){
-  const el=document.getElementById('staff-list');el.innerHTML='';
-  staffList.forEach(s=>{
-    const btn=document.createElement('button');btn.type='button';btn.className='staff-btn';
-    btn.innerHTML=s.name+'<span style="color:#ffffff44">›</span>';
-    const fn=()=>selectStaff(s.id);
-    btn.addEventListener('click',fn);btn.addEventListener('touchend',e=>{e.preventDefault();fn();});
-    el.appendChild(btn);
-  });
-}
-function selectStaff(id){
-  selStaffId=id;pinBuf='';updatePinDots();
-  const s=staffList.find(x=>x.id===id);if(!s)return;
-  document.getElementById('pin-greet').textContent='你好，'+s.name+'！';
-  document.getElementById('lo-step1').style.display='none';
-  document.getElementById('lo-step2').style.display='block';
-  document.getElementById('pin-err').textContent='';
-}
-function updatePinDots(){for(let i=0;i<4;i++)document.getElementById('pd'+i).classList.toggle('on',i<pinBuf.length);}
-async function checkPin(){
-  const s=staffList.find(x=>x.id===selStaffId);if(!s)return;
-  if(pinBuf===s.pin){
-    currentStaff=s;
-    curView='mine';
-    document.querySelectorAll('.vt-btn').forEach(x=>x.classList.toggle('active',x.dataset.view==='mine'));
-    document.getElementById('tabs-wrap').style.display='none';
-    document.getElementById('lo').style.display='none';
-    document.getElementById('user-name').textContent=s.name;
-    document.getElementById('logout-btn').style.display='inline-block';
-    await logAction('登录','员工登录系统');
-    renderList();renderTasks();
+function openSupModal(id){
+  editingSupId=id||null;
+  const modal=document.getElementById('sup-edit-modal');
+  document.getElementById('sup-modal-title').textContent=id?'编辑供应商':'添加供应商';
+  if(id){
+    const s=suppliers.find(x=>x.id===id);if(!s)return;
+    document.getElementById('sup-name').value=s.name;
+    document.getElementById('sup-color').value=s.color||'#5856d6';
+    document.getElementById('sup-dl-day').value=String(s.deadlineDay||1);
+    document.getElementById('sup-dl-time').value=p2(s.deadlineHour||12)+':00';
+    document.getElementById('sup-delivery').value=s.delivery||'';
   }else{
-    document.getElementById('pin-err').textContent='PIN码错误，请重试';
-    pinBuf='';updatePinDots();
+    document.getElementById('sup-name').value='';
+    document.getElementById('sup-color').value='#5856d6';
+    document.getElementById('sup-dl-day').value='1';
+    document.getElementById('sup-dl-time').value='12:00';
+    document.getElementById('sup-delivery').value='';
   }
+  modal.style.display='block';
 }
-document.querySelectorAll('.pp[data-n]').forEach(btn=>{
-  const fn=()=>{if(pinBuf.length>=4)return;pinBuf+=btn.dataset.n;updatePinDots();if(pinBuf.length===4)setTimeout(checkPin,150);};
-  btn.addEventListener('click',fn);btn.addEventListener('touchend',e=>{e.preventDefault();fn();});
-});
-document.getElementById('pin-del').addEventListener('click',()=>{pinBuf=pinBuf.slice(0,-1);updatePinDots();document.getElementById('pin-err').textContent='';});
-document.getElementById('pin-del').addEventListener('touchend',e=>{e.preventDefault();pinBuf=pinBuf.slice(0,-1);updatePinDots();});
-document.getElementById('lo-back').addEventListener('click',()=>{document.getElementById('lo-step1').style.display='block';document.getElementById('lo-step2').style.display='none';selStaffId=null;pinBuf='';});
-document.getElementById('lo-back').addEventListener('touchend',e=>{e.preventDefault();document.getElementById('lo-back').click();});
-document.getElementById('logout-btn').addEventListener('click',()=>{
-  currentStaff=null;selStaffId=null;pinBuf='';
-  document.getElementById('lo').style.display='flex';
-  document.getElementById('lo-step1').style.display='block';
-  document.getElementById('lo-step2').style.display='none';
-  document.getElementById('user-name').textContent='';
-  document.getElementById('logout-btn').style.display='none';
-  renderStaffList();
-});
-document.getElementById('logout-btn').addEventListener('touchend',e=>{e.preventDefault();document.getElementById('logout-btn').click();});
 
-// STORE
-document.getElementById('btn-wetter').addEventListener('click',()=>{curStore='wetter';document.getElementById('btn-wetter').classList.add('active');document.getElementById('btn-bismarck').classList.remove('active');renderList();});
-document.getElementById('btn-bismarck').addEventListener('click',()=>{curStore='bismarck';document.getElementById('btn-bismarck').classList.add('active');document.getElementById('btn-wetter').classList.remove('active');renderList();});
-document.getElementById('btn-wetter').addEventListener('touchend',e=>{e.preventDefault();document.getElementById('btn-wetter').click();});
-document.getElementById('btn-bismarck').addEventListener('touchend',e=>{e.preventDefault();document.getElementById('btn-bismarck').click();});
-
-// VIEW TOGGLE
-document.getElementById('view-toggle').addEventListener('click',e=>{
-  const b=e.target.closest('.vt-btn');if(!b)return;
-  curView=b.dataset.view;
-  document.querySelectorAll('.vt-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');
-  document.getElementById('tabs-wrap').style.display=curView==='supplier'?'block':'none';
-  renderList();
-  window.scrollTo({top:0,behavior:'smooth'});
-});
-document.getElementById('view-toggle').addEventListener('touchend',e=>{
-  const b=e.target.closest('.vt-btn');if(!b)return;e.preventDefault();b.click();
+document.getElementById('add-sup-btn').addEventListener('click',()=>openSupModal(null));
+document.getElementById('cancel-sup-btn').addEventListener('click',()=>{document.getElementById('sup-edit-modal').style.display='none';});
+document.getElementById('save-sup-btn').addEventListener('click',async()=>{
+  const name=document.getElementById('sup-name').value.trim();
+  if(!name){alert('请输入供应商名称');return;}
+  const color=document.getElementById('sup-color').value;
+  const day=parseInt(document.getElementById('sup-dl-day').value);
+  const time=document.getElementById('sup-dl-time').value;
+  const hour=parseInt(time.split(':')[0]);
+  const delivery=document.getElementById('sup-delivery').value.trim();
+  if(editingSupId){
+    const s=suppliers.find(x=>x.id===editingSupId);if(!s)return;
+    s.name=name;s.color=color;s.deadlineDay=day;s.deadlineHour=hour;s.delivery=delivery;
+  }else{
+    suppliers.push({id:'sup_'+Date.now(),name,color,deadlineDay:day,deadlineHour:hour,delivery});
+  }
+  await saveSuppliers();
+  document.getElementById('sup-edit-modal').style.display='none';
+  renderSupList();renderSupFilterBars();renderAdminSupSelect();renderDeliverySupSelect();renderDL();
+  alert('供应商已保存');
 });
 
-// SUBMIT
-document.getElementById('submit-btn').addEventListener('click',async()=>{
-  const btn=document.getElementById('submit-btn');
-  const filledKeys=Object.keys(vals).filter(k=>k.startsWith(curStore+'|')&&vals[k]!=='');
-  if(!filledKeys.length){showToast('请先填写库存数量');return;}
-  btn.textContent='保存中...';
-  const supId=curSupId;
-  const sup=suppliers.find(s=>s.id===supId)||{};
-  const supName=sup?sup.name:supId;
-  const supItems=items.filter(i=>i.sup===supId);
-  const byCat={};
-  supItems.forEach(i=>{if(!byCat[i.cat])byCat[i.cat]=[];byCat[i.cat].push(i);});
-  const data=[];
-  let lines=['【Kochi 库存盘点报告】','门店：'+(curStore==='wetter'?'Kochi Wetter':'Kochi Bismarck'),'供应商：'+supName,'日期：'+new Date().toLocaleString('zh-CN'),''];
-  Object.keys(byCat).forEach(cat=>{
-    lines.push('▸ '+cat);
-    const catItems=[];
-    byCat[cat].forEach(item=>{
-      const k=curStore+'|'+item.sup+'|'+item.zh;
-      const v=vals[k]||'',u=usel[k]||item.units[0];
-      if(v)lines.push('  '+item.zh+': '+v+' '+u);
-      catItems.push({zh:item.zh,val:v,unit:u});
+// ── ADMIN ─────────────────────────────────────────────────────────
+function renderAdmin(){
+  const list=document.getElementById('admin-list');if(!list)return;
+  const f=adminSupF;
+  let filtered=items;
+  if(f!=='all')filtered=filtered.filter(i=>hasSup(i,f));
+  list.innerHTML='';
+  if(!filtered.length){list.innerHTML='<div class="es" style="padding:20px"><div class="es-text">暂无品项</div></div>';return;}
+  filtered.forEach((item,realIdx)=>{
+    const globalIdx=items.indexOf(item);
+    const div=document.createElement('div');
+    div.className='ali'+(selItem===globalIdx?' active':'');
+    const color=getSupColor(item.sup);
+    const assigneeNames=(item.assignees||[]).map(id=>{const s=staffData.find(x=>x.id===id);return s?s.name:'';}).filter(Boolean).join('、');
+    const assigneeTag=assigneeNames?'<span style="font-size:10px;background:#eeeeff;color:#3c3489;border-radius:4px;padding:1px 5px;margin-left:4px">'+assigneeNames+'</span>':'<span style="font-size:10px;background:#f2f2f7;color:#c7c7cc;border-radius:4px;padding:1px 5px;margin-left:4px">未分配</span>';
+    div.innerHTML='<div style="min-width:0"><div class="ali-zh"><span class="sup-dot" style="background:'+color+'"></span>'+item.zh+assigneeTag+'</div><div class="ali-de">'+item.de+'</div></div>';
+    div.addEventListener('click',()=>{selItem=globalIdx;isNewItem=false;renderEditForm();renderAdmin();});
+    list.appendChild(div);
+  });
+}
+
+function buildUnitsEditor(currentUnits, containerId){
+  const units=currentUnits||['KG'];
+  return '<div class="units-editor" id="'+containerId+'">'+
+    '<div class="units-tags" id="'+containerId+'-tags">'+
+      units.map((u,i)=>'<div class="unit-tag">'+u+'<button type="button" class="unit-tag-del" data-idx="'+i+'">×</button></div>').join('')+
+    '</div>'+
+    '<div class="units-presets" id="'+containerId+'-presets">'+
+      UNITS_PRESET.map(u=>'<button type="button" class="unit-preset'+(units.includes(u)?' used':'')+'" data-unit="'+u+'">'+u+'</button>').join('')+
+    '</div>'+
+    '<div class="unit-add-row">'+
+      '<input class="unit-inp" id="'+containerId+'-inp" placeholder="自定义单位...">'+
+      '<button type="button" class="unit-add-btn" id="'+containerId+'-add">添加</button>'+
+    '</div></div>';
+}
+
+function bindUnitsEditor(containerId, getUnits, setUnits){
+  const tags=document.getElementById(containerId+'-tags');
+  const presets=document.getElementById(containerId+'-presets');
+  function refresh(){
+    const u=getUnits();
+    if(tags){
+      tags.innerHTML=u.map((x,i)=>'<div class="unit-tag">'+x+'<button type="button" class="unit-tag-del" data-idx="'+i+'">×</button></div>').join('');
+      tags.querySelectorAll('.unit-tag-del').forEach(b=>{
+        b.addEventListener('click',()=>{const nu=[...u];nu.splice(parseInt(b.dataset.idx),1);setUnits(nu);refresh();});
+      });
+    }
+    if(presets){
+      presets.querySelectorAll('.unit-preset').forEach(p=>{
+        p.classList.toggle('used',u.includes(p.dataset.unit));
+      });
+    }
+  }
+  if(presets){
+    presets.querySelectorAll('.unit-preset').forEach(p=>{
+      p.addEventListener('click',()=>{
+        const u=getUnits();
+        if(u.includes(p.dataset.unit))setUnits(u.filter(x=>x!==p.dataset.unit));
+        else setUnits([...u,p.dataset.unit]);
+        refresh();
+      });
     });
-    data.push({cat,items:catItems});
-    lines.push('');
-  });
-  await saveInv(curStore,supId,data);
-  // Clear boss flags
-  let changed=false;
-  supItems.forEach(item=>{const fk=item.sup+'|'+item.zh;if(bossFlags[fk]){delete bossFlags[fk];changed=true;}});
-  if(changed)await sbSet(KEYS.flags,JSON.stringify(bossFlags));
-  await logAction('盘点提交','供应商：'+supName);
-  btn.textContent='✓ 提交盘点结果';
-  document.getElementById('result-box').textContent=lines.join('\n');
-  document.getElementById('result-panel').classList.add('show');
-  document.getElementById('result-panel').scrollIntoView({behavior:'smooth'});
-  showToast('数据已同步到老板端');
-});
-document.getElementById('copy-btn').addEventListener('click',()=>{
-  const txt=document.getElementById('result-box').textContent;
-  if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>showToast('已复制'));
-  else{const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('已复制');}
-});
-
-// EMERGENCY
-document.getElementById('emer-search').addEventListener('input',e=>renderEmerSearch(e.target.value.trim()));
-document.getElementById('emer-open').addEventListener('click',()=>{document.getElementById('emer-result').classList.remove('show');document.getElementById('emer-submit').disabled=Object.keys(emerSel).length===0;document.getElementById('emer-page').classList.add('show');});
-document.getElementById('emer-open').addEventListener('touchend',e=>{e.preventDefault();document.getElementById('emer-open').click();});
-document.getElementById('emer-back').addEventListener('click',()=>document.getElementById('emer-page').classList.remove('show'));
-document.getElementById('emer-back').addEventListener('touchend',e=>{e.preventDefault();document.getElementById('emer-page').classList.remove('show');});
-
-function renderEmerSearch(q){
-  const el=document.getElementById('emer-items-list');
-  if(!q){el.innerHTML='<div class="emer-empty-txt">输入关键词搜索品项</div>';return;}
-  const hits=items.filter(i=>i.zh.includes(q)||i.de.toLowerCase().includes(q.toLowerCase())).slice(0,15);
-  if(!hits.length){el.innerHTML='<div class="emer-empty-txt">未找到</div>';return;}
-  el.innerHTML='';
-  hits.forEach(item=>{
-    const k=item.zh+'|'+item.sup;
-    const d=document.createElement('div');d.className='emer-item'+(emerSel[k]?' selected':'');
-    const supNames=getSups(item).map(id=>{const s=suppliers.find(x=>x.id===id);return s?s.name:id;}).join('/');
-    d.innerHTML='<div><div class="emer-item-zh">'+item.zh+'</div><div class="emer-item-de">'+item.de+'</div></div><span class="emer-item-sup">'+supNames+'</span>';
-    const fn=()=>{if(!emerSel[k])emerSel[k]={zh:item.zh,de:item.de,sup:item.sup,reason:REASONS[0],note:''};renderEmerSelected();renderEmerSearch(document.getElementById('emer-search').value);};
-    d.addEventListener('click',fn);d.addEventListener('touchend',e=>{e.preventDefault();fn();});
-    el.appendChild(d);
-  });
+  }
+  const addBtn=document.getElementById(containerId+'-add');
+  const inp=document.getElementById(containerId+'-inp');
+  if(addBtn&&inp){
+    addBtn.addEventListener('click',()=>{
+      const v=inp.value.trim();if(!v)return;
+      const u=getUnits();if(!u.includes(v))setUnits([...u,v]);
+      inp.value='';refresh();
+    });
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addBtn.click();}});
+  }
+  refresh();
 }
 
-function renderEmerSelected(){
-  const wrap=document.getElementById('sel-items');
-  const sec=document.getElementById('emer-sel-sec');
-  const keys=Object.keys(emerSel);
-  sec.style.display=keys.length?'block':'none';
-  document.getElementById('emer-submit').disabled=keys.length===0;
-  wrap.innerHTML='';
-  keys.forEach(k=>{
-    const item=emerSel[k];
-    const card=document.createElement('div');card.className='sel-card';
-    card.innerHTML='<div class="sel-top"><div class="sel-zh">'+item.zh+'</div><button type="button" class="sel-remove" data-key="'+k+'">移除</button></div>'+
-      '<div class="sel-row"><span class="sel-lbl">原因</span><select class="sel-reason" data-key="'+k+'">'+REASONS.map(r=>'<option'+(item.reason===r?' selected':'')+'>'+r+'</option>').join('')+'</select></div>'+
-      '<textarea class="sel-note" data-key="'+k+'" placeholder="补充说明（可选）" rows="2">'+item.note+'</textarea>';
-    wrap.appendChild(card);
-  });
-  wrap.querySelectorAll('.sel-remove').forEach(b=>{
-    const fn=()=>{delete emerSel[b.dataset.key];renderEmerSelected();renderEmerSearch(document.getElementById('emer-search').value);};
-    b.addEventListener('click',fn);b.addEventListener('touchend',e=>{e.preventDefault();fn();});
-  });
-  wrap.querySelectorAll('.sel-reason').forEach(s=>{s.addEventListener('change',()=>{emerSel[s.dataset.key].reason=s.value;});});
-  wrap.querySelectorAll('.sel-note').forEach(t=>{t.addEventListener('input',()=>{emerSel[t.dataset.key].note=t.value;});});
+let editItemUnits=[];
+let editAlUnit='KG';
+
+function renderEditForm(){
+  const panel=document.getElementById('edit-panel');
+  const LOCS_OPTS=LOCS.map(l=>'<option>'+l+'</option>').join('');
+  const FREQ_OPTS=FREQ_OPTIONS.map(f=>'<option value="'+f.id+'">'+f.label+'</option>').join('');
+  const SUP_OPTS=suppliers.map(s=>'<option value="'+s.id+'">'+s.name+'</option>').join('');
+  const AL_UNIT_OPTS=UNITS_PRESET.map(u=>'<option value="'+u+'"'+(u===editAlUnit?' selected':'')+'>'+u+'</option>').join('');
+
+  if(isNewItem){
+    editItemUnits=['KG'];editAlUnit='KG';
+    panel.innerHTML='<div class="ef" style="max-height:calc(100vh - 160px);overflow-y:auto">'+
+      '<div style="font-size:14px;font-weight:700;margin-bottom:12px">新增品项</div>'+
+      '<div class="fr"><label class="fl">中文名 *</label><input class="fi" id="f-zh" placeholder="例：和牛A5 上脑"></div>'+
+      '<div class="fr"><label class="fl">德文名 / 货号</label><input class="fi" id="f-de" placeholder="例：Wagyu JPN A5 Top Blade · 792300"></div>'+
+      '<div class="fr"><label class="fl">规格说明</label><input class="fi" id="f-spec" placeholder="例：每箱10袋，每袋22粒，约2kg"></div>'+
+      '<div class="fr2">'+
+        '<div class="fr"><label class="fl">供应商 *（可多选）</label><div class="sup-checks" id="f-sup-checks">'+suppliers.map(s=>'<label style="display:flex;align-items:center;gap:6px;padding:6px 10px;background:#f9f9f9;border:1.5px solid #d1d1d6;border-radius:8px;cursor:pointer;margin-bottom:5px"><input type="checkbox" value="'+s.id+'" style="width:16px;height:16px;accent-color:'+s.color+'"><span style="font-size:13px;font-weight:600">'+s.name+'</span></label>').join('')+'</div></div>'+
+        '<div class="fr"><label class="fl">分类 *</label><input class="fi" id="f-cat" placeholder="例：和牛 Wagyu A5/F1"></div>'+
+      '</div>'+
+      '<div class="fr2">'+
+        '<div class="fr"><label class="fl">存放位置</label><select class="fi" id="f-loc">'+LOCS_OPTS+'</select></div>'+
+        '<div class="fr"><label class="fl">盘点频率</label><select class="fi" id="f-freq">'+FREQ_OPTS+'</select></div>'+
+      '</div>'+
+      '<div class="fr2">'+
+        '<div class="fr"><label class="fl">预警数量 *</label><input class="fi" id="f-alv" type="number" min="0" step="0.1" placeholder="3"></div>'+
+        '<div class="fr"><label class="fl">预警单位 *</label><select class="fi" id="f-alu">'+UNITS_PRESET.map(u=>'<option>'+u+'</option>').join('')+'</select></div>'+
+      '</div>'+
+      '<div class="fr"><label class="fl">盘点单位（可多选）</label>'+buildUnitsEditor(editItemUnits,'ue')+'</div>'+
+      '<div class="fr"><label class="fl">负责员工（可多选）</label><div class="staff-checks" id="f-staff-checks">'+staffData.map(s=>'<label style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;background:#f9f9f9;border:1.5px solid #d1d1d6;border-radius:8px;cursor:pointer;margin:0 5px 5px 0"><input type="checkbox" value="'+s.id+'" style="width:14px;height:14px;accent-color:#5856d6"><span style="font-size:13px;font-weight:600">'+s.name+'</span></label>').join('')+'</div></div>'+
+      '<div class="br"><button type="button" class="bp" id="sv-item">保存</button><button type="button" class="bs" id="cl-item">取消</button></div></div>';
+    document.getElementById('sv-item').addEventListener('click',saveNewItem);
+    document.getElementById('cl-item').addEventListener('click',()=>{isNewItem=false;selItem=null;panel.innerHTML='<div class="ef"><div class="es"><div class="es-icon">👈</div><div class="es-text">选择左侧品项编辑</div></div></div>';renderAdmin();});
+    bindUnitsEditor('ue',()=>editItemUnits,v=>editItemUnits=v);
+    return;
+  }
+
+  if(selItem===null||selItem===undefined)return;
+  const item=items[selItem];if(!item)return;
+  const al=getAl(item.sup,item.zh);
+  editItemUnits=[...(item.units||['KG'])];
+  editAlUnit=al.unit;
+
+  panel.innerHTML='<div class="ef" style="max-height:calc(100vh - 160px);overflow-y:auto">'+
+    '<div style="font-size:14px;font-weight:700;margin-bottom:12px">编辑品项</div>'+
+    '<div class="fr"><label class="fl">中文名 *</label><input class="fi" id="f-zh" value="'+item.zh.replace(/"/g,"&quot;")+'"></div>'+
+    '<div class="fr"><label class="fl">德文名 / 货号</label><input class="fi" id="f-de" value="'+item.de.replace(/"/g,"&quot;")+'"></div>'+
+    '<div class="fr"><label class="fl">规格说明</label><input class="fi" id="f-spec" value="'+(item.spec||'').replace(/"/g,"&quot;")+'" placeholder="例：每箱10袋，每袋22粒，约2kg"></div>'+
+    '<div class="fr2">'+
+      '<div class="fr"><label class="fl">供应商（可多选）</label><div class="sup-checks" id="f-sup-checks">'+suppliers.map(s=>'<label style="display:flex;align-items:center;gap:6px;padding:6px 10px;background:#f9f9f9;border:1.5px solid #d1d1d6;border-radius:8px;cursor:pointer;margin-bottom:5px"><input type="checkbox" value="'+s.id+'"'+(getSups(item).includes(s.id)?' checked':'')+' style="width:16px;height:16px;accent-color:'+s.color+'"><span style="font-size:13px;font-weight:600">'+s.name+'</span></label>').join('')+'</div></div>'+
+      '<div class="fr"><label class="fl">分类</label><input class="fi" id="f-cat" value="'+item.cat.replace(/"/g,"&quot;")+'"></div>'+
+    '</div>'+
+    '<div class="fr2">'+
+      '<div class="fr"><label class="fl">存放位置</label><select class="fi" id="f-loc">'+LOCS.map(l=>'<option'+(item.loc===l?' selected':'')+'>'+l+'</option>').join('')+'</select></div>'+
+      '<div class="fr"><label class="fl">盘点频率</label><select class="fi" id="f-freq">'+FREQ_OPTIONS.map(f=>'<option value="'+f.id+'"'+(item.freq===f.id?' selected':'')+'>'+f.label+'</option>').join('')+'</select></div>'+
+    '</div>'+
+    '<div class="fr2">'+
+      '<div class="fr"><label class="fl">预警数量 *</label><input class="fi" id="f-alv" type="number" min="0" step="0.1" value="'+al.val+'"></div>'+
+      '<div class="fr"><label class="fl">预警单位 *</label><select class="fi" id="f-alu">'+UNITS_PRESET.map(u=>'<option'+(u===al.unit?' selected':'')+'>'+u+'</option>').join('')+'</select></div>'+
+    '</div>'+
+    '<div class="fr"><label class="fl">盘点单位（可多选）</label>'+buildUnitsEditor(editItemUnits,'ue')+'</div>'+
+    '<div class="fr"><label class="fl">负责员工（可多选）</label><div class="staff-checks" id="f-staff-checks">'+staffData.map(s=>'<label style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;background:#f9f9f9;border:1.5px solid #d1d1d6;border-radius:8px;cursor:pointer;margin:0 5px 5px 0"><input type="checkbox" value="'+s.id+'"'+((item.assignees||[]).includes(s.id)?' checked':'')+' style="width:14px;height:14px;accent-color:#5856d6"><span style="font-size:13px;font-weight:600">'+s.name+'</span></label>').join('')+'</div></div>'+
+    '<div class="br"><button type="button" class="bp" id="sv-item">保存修改</button><button type="button" class="bd" id="dl-item">删除</button></div></div>';
+  document.getElementById('sv-item').addEventListener('click',saveEditItem);
+  document.getElementById('dl-item').addEventListener('click',deleteItem);
+  bindUnitsEditor('ue',()=>editItemUnits,v=>editItemUnits=v);
 }
 
-document.getElementById('emer-submit').addEventListener('click',async()=>{
-  const keys=Object.keys(emerSel);if(!keys.length)return;
-  const store=curStore==='wetter'?'Kochi Wetter':'Kochi Bismarck';
-  const now=new Date(),timeStr=now.toLocaleString('zh-CN');
-  const its=keys.map(k=>emerSel[k]);
-  try{const r=await sbGet(KEYS.emer);const list=r&&r.value?JSON.parse(r.value):[];list.unshift({store,time:now.getTime(),timeStr,items:its});if(list.length>50)list.splice(50);await sbSet(KEYS.emer,JSON.stringify(list));}catch(e){}
-  await logAction('告急上报','上报'+its.length+'个品项');
-  const lines=['🚨【库存告急通知】','门店：'+store,'时间：'+timeStr,''];
-  its.forEach((it,i)=>{lines.push((i+1)+'. '+it.zh);lines.push('   原因：'+it.reason);if(it.note)lines.push('   备注：'+it.note);});
-  lines.push('');lines.push('请老板尽快安排补货！');
-  document.getElementById('emer-result-box').textContent=lines.join('\n');
-  document.getElementById('emer-result').classList.add('show');
-  document.getElementById('emer-submit').disabled=true;
-  document.getElementById('emer-submit').textContent='✅ 已上报';
-});
-document.getElementById('emer-copy').addEventListener('click',()=>{
-  const txt=document.getElementById('emer-result-box').textContent;
-  if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>showToast('已复制'));
-  else{const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('已复制');}
+async function saveEditItem(){
+  const item=items[selItem];if(!item)return;
+  const zh=document.getElementById('f-zh').value.trim();
+  const de=document.getElementById('f-de').value.trim();
+  const sup=Array.from(document.querySelectorAll('#f-sup-checks input:checked')).map(x=>x.value);
+  const cat=document.getElementById('f-cat').value.trim();
+  const loc=document.getElementById('f-loc').value;
+  const freq=document.getElementById('f-freq').value;
+  const alv=parseFloat(document.getElementById('f-alv').value);
+  const alu=document.getElementById('f-alu').value;
+  if(!zh||!sup.length||!cat||!alv||!alu){alert('请填写必填项，至少选一个供应商');return;}
+  const oldKey=item.sup+'|'+item.zh;
+  const assignees=Array.from(document.querySelectorAll('#f-staff-checks input:checked')).map(x=>x.value);
+  const spec=document.getElementById('f-spec')?document.getElementById('f-spec').value.trim():'';
+  item.zh=zh;item.de=de;item.spec=spec;item.sup=sup;item.cat=cat;item.loc=loc;item.freq=freq;
+  item.units=editItemUnits.length?editItemUnits:['KG'];
+  item.assignees=assignees;
+  if(aData[oldKey])delete aData[oldKey];
+  aData[sup+'|'+zh]={val:alv,unit:alu};
+  await saveItems();await saveAlerts();
+  renderAdmin();renderDash();alert('保存成功');
+}
+
+async function saveNewItem(){
+  const zh=document.getElementById('f-zh').value.trim();
+  const de=document.getElementById('f-de').value.trim();
+  const sup=Array.from(document.querySelectorAll('#f-sup-checks input:checked')).map(x=>x.value);
+  const cat=document.getElementById('f-cat').value.trim();
+  const loc=document.getElementById('f-loc').value;
+  const freq=document.getElementById('f-freq').value;
+  const alv=parseFloat(document.getElementById('f-alv').value);
+  const alu=document.getElementById('f-alu').value;
+  if(!zh||!sup.length||!cat||isNaN(alv)||!alu){alert('请填写所有必填项，至少选一个供应商');return;}
+  const assignees=Array.from(document.querySelectorAll('#f-staff-checks input:checked')).map(x=>x.value);
+  const spec=document.getElementById('f-spec')?document.getElementById('f-spec').value.trim():'';
+  items.push({zh,de,spec,sup,cat,loc,freq,units:editItemUnits.length?editItemUnits:['KG'],assignees});
+  aData[sup+'|'+zh]={val:alv,unit:alu};
+  await saveItems();await saveAlerts();
+  isNewItem=false;selItem=null;
+  document.getElementById('edit-panel').innerHTML='<div class="ef"><div class="es"><div class="es-icon">✅</div><div class="es-text">新品项已添加</div></div></div>';
+  renderAdmin();renderDash();
+}
+
+async function deleteItem(){
+  if(!confirm('确定删除此品项？'))return;
+  const item=items[selItem];if(!item)return;
+  const key=item.sup+'|'+item.zh;
+  items.splice(selItem,1);
+  if(aData[key])delete aData[key];
+  await saveItems();await saveAlerts();selItem=null;
+  document.getElementById('edit-panel').innerHTML='<div class="ef"><div class="es"><div class="es-icon">🗑️</div><div class="es-text">品项已删除</div></div></div>';
+  renderAdmin();renderDash();
+}
+
+// ── NAV EVENTS ─────────────────────────────────────────────────────
+document.querySelectorAll('.ni').forEach(n=>{
+  n.addEventListener('click',()=>{
+    document.querySelectorAll('.ni').forEach(x=>x.classList.remove('active'));n.classList.add('active');
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById('page-'+n.dataset.page).classList.add('active');
+    if(n.dataset.page==='emergency')loadEmergency();
+    if(n.dataset.page==='logs')loadLogs();
+    if(n.dataset.page==='staff')renderStaffTable();
+    if(n.dataset.page==='flags')renderFlagsPage();
+    if(n.dataset.page==='delivery'){renderDeliveryList();renderDeliverySupSelect();}
+  });
 });
 
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+document.querySelectorAll('.stab').forEach(t=>{t.addEventListener('click',()=>{document.querySelectorAll('.stab').forEach(x=>x.classList.remove('active'));t.classList.add('active');dashView=t.dataset.view;renderDash();});});
+document.getElementById('refresh-btn').addEventListener('click',async()=>{document.getElementById('refresh-btn').textContent='刷新中...';await loadInv();renderDash();document.getElementById('refresh-btn').textContent='↻ 刷新';});
+document.getElementById('log-ref').addEventListener('click',loadLogs);
+document.getElementById('log-fs').addEventListener('change',loadLogs);
+document.getElementById('log-fa').addEventListener('change',loadLogs);
+document.getElementById('add-staff-btn').addEventListener('click',()=>{isNewStaff=true;selStaff=null;renderStaffEdit();});
+document.getElementById('add-item-btn').addEventListener('click',()=>{isNewItem=true;selItem=null;renderEditForm();renderAdmin();});
+document.getElementById('asf').addEventListener('change',e=>{adminSupF=e.target.value;selItem=null;document.getElementById('edit-panel').innerHTML='<div class="ef"><div class="es"><div class="es-icon">👈</div><div class="es-text">选择左侧品项编辑</div></div></div>';renderAdmin();});
 
-// INIT
-(async()=>{
-  await loadAll();
-  renderStaffList();
-  renderTabs();
-  if(curSupId)renderList();
-  setInterval(tickClock,1000);tickClock();
-})();
+function renderBatchAssign(){
+  const ft=document.getElementById('batch-filter-type');
+  const fv=document.getElementById('batch-filter-val');
+  const ss=document.getElementById('batch-staff-sel');
+  if(!ft||!fv||!ss)return;
+  const type=ft.value;
+  if(type==='loc'){
+    fv.innerHTML=LOCS.map(l=>'<option value="'+l+'">'+l+'</option>').join('');
+  } else {
+    fv.innerHTML=suppliers.map(s=>'<option value="'+s.id+'">'+s.name+'</option>').join('');
+  }
+  ss.innerHTML='<option value="">-- 选择员工 --</option>'+staffData.map(s=>'<option value="'+s.id+'">'+s.name+'</option>').join('');
+}
+
+document.getElementById('batch-filter-type').addEventListener('change',renderBatchAssign);
+
+document.getElementById('batch-assign-btn').addEventListener('click',async()=>{
+  const type=document.getElementById('batch-filter-type').value;
+  const val=document.getElementById('batch-filter-val').value;
+  const staffId=document.getElementById('batch-staff-sel').value;
+  if(!staffId){alert('请选择要分配的员工');return;}
+  let count=0;
+  items.forEach(item=>{
+    const match=type==='loc'?item.loc===val:hasSup(item,val);
+    if(!match)return;
+    if(!item.assignees)item.assignees=[];
+    if(!item.assignees.includes(staffId)){item.assignees.push(staffId);count++;}
+  });
+  await saveItems();
+  document.getElementById('batch-result').textContent='✓ 已分配 '+count+' 个品项';
+  setTimeout(()=>{document.getElementById('batch-result').textContent='';},3000);
+  renderAdmin();
+});
+
+// Drag and drop for upload zone
+const uz=document.getElementById('upload-zone');
+uz.addEventListener('dragover',e=>{e.preventDefault();uz.classList.add('drag');});
+uz.addEventListener('dragleave',()=>uz.classList.remove('drag'));
+uz.addEventListener('drop',e=>{e.preventDefault();uz.classList.remove('drag');const f=e.dataTransfer.files[0];if(f){document.getElementById('upload-input').files=e.dataTransfer.files;document.getElementById('upload-input').dispatchEvent(new Event('change'));}});
+
+// ── INIT ──────────────────────────────────────────────────────────
+loadAll();
+setInterval(tickClock,1000);tickClock();
 </script>
 </body>
 </html>
