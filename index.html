@@ -401,7 +401,27 @@ button{-webkit-appearance:none;touch-action:manipulation;cursor:pointer}
 const SB_URL='https://vadehcocwrjsbqvssqkk.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhZGVoY29jd3Jqc2JxdnNzcWtrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NTE4MjUsImV4cCI6MjA5NDQyNzgyNX0.xfPAuO6qMNYe7Z2R2nDOKmW5OHIfWTpcPcz8EQMiGdM';
 async function sbGet(k){try{const r=await fetch(SB_URL+'/rest/v1/inventory?key=eq.'+encodeURIComponent(k)+'&select=value',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});const d=await r.json();if(d&&d.length>0)return{value:d[0].value};return null;}catch(e){return null;}}
-async function sbSet(k,v){try{const val=typeof v==='string'?v:JSON.stringify(v);await fetch(SB_URL+'/rest/v1/inventory',{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},body:JSON.stringify({key:k,value:val,updated_at:new Date().toISOString()})});return true;}catch(e){return false;}}
+async function sbSet(k,v){
+  try{
+    const val=typeof v==='string'?v:JSON.stringify(v);
+    const resp=await fetch(SB_URL+'/rest/v1/inventory',{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates'},
+      body:JSON.stringify({key:k,value:val,updated_at:new Date().toISOString()})
+    });
+    if(!resp.ok){
+      const err=await resp.text();
+      console.error('sbSet error',resp.status,err);
+      alert('保存失败 '+resp.status+': '+err.substring(0,200));
+      return false;
+    }
+    return true;
+  }catch(e){
+    console.error('sbSet exception',e);
+    alert('保存异常: '+e.message);
+    return false;
+  }
+}
 
 // ── CONSTANTS ──────────────────────────────────────────────────────
 const KEYS={items:'kochi_items_v3',suppliers:'kochi_suppliers_v1',alerts:'kochi_alerts_v1',staff:'kochi_staff_v1',log:'kochi_login_log_v1',emer:'kochi_emergency_v1',flags:'kochi_boss_flags_v1',deliveries:'kochi_deliveries_v1'};
