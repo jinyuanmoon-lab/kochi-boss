@@ -641,7 +641,7 @@ function renderDash(){
     const freqBdg='<span class="freq-bdg '+freqClass(item.freq)+'">'+freqLabel(item.freq)+'</span>';
     const flagBtn='<button type="button" class="flag-btn '+(isFlagged?'on':'off')+'" data-sup="'+sup+'" data-zh="'+encodeURIComponent(item.zh)+'">'+(isFlagged?'🔔':'标记')+'</button>';
     const supDot='<span class="sup-dot" style="background:'+color+'"></span>';
-    h+='<tr><td><div class="izc">'+item.zh+'</div><div class="idc">'+item.de+'</div></td>'+
+    h+='<tr><td><div class="izc">'+item.zh+'</div><div class="idc">'+item.de+'</div>'+(item.spec?'<div style="font-size:10px;color:#5856d6;margin-top:2px;font-weight:500">'+item.spec+'</div>':'')+'</td>'+
        '<td>'+locDot+(item.loc||'')+'</td><td>'+freqBdg+'</td><td>'+flagBtn+'</td>'+
        '<td>'+supTags(item)+'</td>';
     if(dashView==='wetter'||dashView==='both')h+=sc(w);
@@ -683,7 +683,7 @@ function renderPurchase(){
     // Show under ALL associated suppliers so boss can choose where to order
     sups.forEach(sid=>{
       if(!bySup[sid])bySup[sid]=[];
-      bySup[sid].push({zh:item.zh,de:item.de,total,need,unit:both.unit||al.unit,alert:al.val,sups:sups.map(id=>getSupName(id)).join(' / ')});
+      bySup[sid].push({zh:item.zh,de:item.de,spec:item.spec||'',total,need,unit:both.unit||al.unit,alert:al.val,sups:sups.map(id=>getSupName(id)).join(' / ')});
     });
   });
   let h='';
@@ -691,7 +691,7 @@ function renderPurchase(){
     const its=bySup[sup.id];if(!its||!its.length)return;
     h+='<div class="card"><div class="ct">'+sup.name+' <span>'+its.length+'个品项需采购</span></div>'+
        '<div style="overflow-x:auto"><table class="tb"><thead><tr><th>品名</th><th>两店合计</th><th>预警线</th><th>建议采购量</th></tr></thead><tbody>';
-    its.forEach(it=>{const multiSup=it.sups&&it.sups.includes('/')?' <span style="font-size:10px;color:#8e8e93">(可选: '+it.sups+')</span>':'';h+='<tr><td><div class="izc">'+it.zh+multiSup+'</div><div class="idc">'+it.de+'</div></td><td class="sc alert">'+it.total+' '+it.unit+'</td><td style="color:#8e8e93">'+it.alert+' '+it.unit+'</td><td style="font-weight:700;color:#5856d6">≥ '+it.need+' '+it.unit+'</td></tr>';});
+    its.forEach(it=>{const multiSup=it.sups&&it.sups.includes('/')?' <span style="font-size:10px;color:#8e8e93">(可选: '+it.sups+')</span>':'';h+='<tr><td><div class="izc">'+it.zh+multiSup+'</div><div class="idc">'+it.de+'</div>'+(it.spec?'<div style="font-size:10px;color:#5856d6;margin-top:2px;font-weight:500">📦 '+it.spec+'</div>':'')+'</td><td class="sc alert">'+it.total+' '+it.unit+'</td><td style="color:#8e8e93">'+it.alert+' '+it.unit+'</td><td style="font-weight:700;color:#5856d6">≥ '+it.need+' '+it.unit+'</td></tr>';});
     h+='</tbody></table></div></div>';
   });
   if(!h)h='<div class="card"><div class="es"><div class="es-icon">✅</div><div class="es-text">所有品项库存充足</div></div></div>';
@@ -842,7 +842,7 @@ function renderFlagsPage(){
     const fk=item.sup+'|'+item.zh,isFlagged=bossFlags[fk];
     const locDot=item.loc?'<span class="loc-dot" style="background:'+(LOC_COLORS[item.loc]||'#8e8e93')+'"></span>':'';
     const supDot='<span class="sup-dot" style="background:'+getSupColor(item.sup)+'"></span>';
-    h+='<tr><td><div class="izc">'+item.zh+'</div><div class="idc">'+item.de+'</div></td>'+
+    h+='<tr><td><div class="izc">'+item.zh+'</div><div class="idc">'+item.de+'</div>'+(item.spec?'<div style="font-size:10px;color:#5856d6;margin-top:2px;font-weight:500">'+item.spec+'</div>':'')+'</td>'+
        '<td>'+supTags(item)+'</td>'+
        '<td>'+locDot+(item.loc||'')+'</td>'+
        '<td><span class="freq-bdg '+freqClass(item.freq)+'">'+freqLabel(item.freq)+'</span></td>'+
@@ -1095,6 +1095,7 @@ function renderEditForm(){
       '<div style="font-size:14px;font-weight:700;margin-bottom:12px">新增品项</div>'+
       '<div class="fr"><label class="fl">中文名 *</label><input class="fi" id="f-zh" placeholder="例：和牛A5 上脑"></div>'+
       '<div class="fr"><label class="fl">德文名 / 货号</label><input class="fi" id="f-de" placeholder="例：Wagyu JPN A5 Top Blade · 792300"></div>'+
+      '<div class="fr"><label class="fl">规格说明</label><input class="fi" id="f-spec" placeholder="例：每箱10袋，每袋22粒，约2kg"></div>'+
       '<div class="fr2">'+
         '<div class="fr"><label class="fl">供应商 *（可多选）</label><div class="sup-checks" id="f-sup-checks">'+suppliers.map(s=>'<label style="display:flex;align-items:center;gap:6px;padding:6px 10px;background:#f9f9f9;border:1.5px solid #d1d1d6;border-radius:8px;cursor:pointer;margin-bottom:5px"><input type="checkbox" value="'+s.id+'" style="width:16px;height:16px;accent-color:'+s.color+'"><span style="font-size:13px;font-weight:600">'+s.name+'</span></label>').join('')+'</div></div>'+
         '<div class="fr"><label class="fl">分类 *</label><input class="fi" id="f-cat" placeholder="例：和牛 Wagyu A5/F1"></div>'+
@@ -1126,6 +1127,7 @@ function renderEditForm(){
     '<div style="font-size:14px;font-weight:700;margin-bottom:12px">编辑品项</div>'+
     '<div class="fr"><label class="fl">中文名 *</label><input class="fi" id="f-zh" value="'+item.zh.replace(/"/g,"&quot;")+'"></div>'+
     '<div class="fr"><label class="fl">德文名 / 货号</label><input class="fi" id="f-de" value="'+item.de.replace(/"/g,"&quot;")+'"></div>'+
+    '<div class="fr"><label class="fl">规格说明</label><input class="fi" id="f-spec" value="'+(item.spec||'').replace(/"/g,"&quot;")+'" placeholder="例：每箱10袋，每袋22粒，约2kg"></div>'+
     '<div class="fr2">'+
       '<div class="fr"><label class="fl">供应商（可多选）</label><div class="sup-checks" id="f-sup-checks">'+suppliers.map(s=>'<label style="display:flex;align-items:center;gap:6px;padding:6px 10px;background:#f9f9f9;border:1.5px solid #d1d1d6;border-radius:8px;cursor:pointer;margin-bottom:5px"><input type="checkbox" value="'+s.id+'"'+(getSups(item).includes(s.id)?' checked':'')+' style="width:16px;height:16px;accent-color:'+s.color+'"><span style="font-size:13px;font-weight:600">'+s.name+'</span></label>').join('')+'</div></div>'+
       '<div class="fr"><label class="fl">分类</label><input class="fi" id="f-cat" value="'+item.cat.replace(/"/g,"&quot;")+'"></div>'+
@@ -1159,7 +1161,8 @@ async function saveEditItem(){
   if(!zh||!sup.length||!cat||!alv||!alu){alert('请填写必填项，至少选一个供应商');return;}
   const oldKey=item.sup+'|'+item.zh;
   const assignees=Array.from(document.querySelectorAll('#f-staff-checks input:checked')).map(x=>x.value);
-  item.zh=zh;item.de=de;item.sup=sup;item.cat=cat;item.loc=loc;item.freq=freq;
+  const spec=document.getElementById('f-spec')?document.getElementById('f-spec').value.trim():'';
+  item.zh=zh;item.de=de;item.spec=spec;item.sup=sup;item.cat=cat;item.loc=loc;item.freq=freq;
   item.units=editItemUnits.length?editItemUnits:['KG'];
   item.assignees=assignees;
   if(aData[oldKey])delete aData[oldKey];
@@ -1179,7 +1182,8 @@ async function saveNewItem(){
   const alu=document.getElementById('f-alu').value;
   if(!zh||!sup.length||!cat||isNaN(alv)||!alu){alert('请填写所有必填项，至少选一个供应商');return;}
   const assignees=Array.from(document.querySelectorAll('#f-staff-checks input:checked')).map(x=>x.value);
-  items.push({zh,de,sup,cat,loc,freq,units:editItemUnits.length?editItemUnits:['KG'],assignees});
+  const spec=document.getElementById('f-spec')?document.getElementById('f-spec').value.trim():'';
+  items.push({zh,de,spec,sup,cat,loc,freq,units:editItemUnits.length?editItemUnits:['KG'],assignees});
   aData[sup+'|'+zh]={val:alv,unit:alu};
   await saveItems();await saveAlerts();
   isNewItem=false;selItem=null;
