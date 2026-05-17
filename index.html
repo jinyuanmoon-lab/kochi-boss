@@ -477,6 +477,10 @@ function renderAll(){
 // ── SUPPLIER HELPERS ───────────────────────────────────────────────
 function getSupName(id){const s=suppliers.find(x=>x.id===id);return s?s.name:id;}
 function getSupColor(id){const s=suppliers.find(x=>x.id===id);return s?s.color:'#8e8e93';}
+// Normalize sup field - always returns array
+function getSups(item){const s=item.sup;if(!s)return[];return Array.isArray(s)?s:[s];}
+function hasSup(item,supId){return getSups(item).includes(supId);}
+function supTags(item){return getSups(item).map(id=>'<span style="display:inline-flex;align-items:center;gap:3px;background:#f2f2f7;border:1px solid #e5e5ea;border-radius:5px;padding:2px 6px;font-size:11px;font-weight:600;color:#3c3c43;margin-right:3px"><span style="width:7px;height:7px;border-radius:50%;background:'+getSupColor(id)+';display:inline-block"></span>'+getSupName(id)+'</span>').join('');}
 
 function renderSupFilterBars(){
   // Dashboard filter
@@ -533,7 +537,15 @@ function defAlert(supId,zh){
   if(sname.includes('kim')){if(zh.includes('饺')||zh.includes('鲷鱼')||zh.includes('雪糕'))return{val:1,unit:'箱'};if(zh.includes('烧酒')||zh.includes('真露')||zh.includes('顺和'))return{val:0.5,unit:'箱'};return{val:1,unit:'箱'};}
   return{val:2,unit:'KG'};
 }
-function getAl(supId,zh){return aData[supId+'|'+zh]||defAlert(supId,zh);}
+function getAl(supIdOrItem,zh){
+  // Accept either a supId string or an item object
+  if(typeof supIdOrItem==='object'){
+    const sups=getSups(supIdOrItem);
+    for(const sid of sups){const a=aData[sid+'|'+zh];if(a)return a;}
+    return defAlert(sups[0]||'',zh);
+  }
+  return aData[supIdOrItem+'|'+zh]||defAlert(supIdOrItem,zh);
+}
 
 // ── FREQUENCY LABEL ────────────────────────────────────────────────
 function freqLabel(freq){
@@ -578,7 +590,7 @@ function renderDash(){
       else{const st=getStock(dashView,sup,item.zh);if(!st||st.val<al.val)show=true;}
       if(!show)return;
     }
-    if(dashFilter!=='all'&&dashFilter!=='alert'&&dashFilter!==sup)return;
+    if(dashFilter!=='all'&&dashFilter!=='alert'&&!hasSup(item,dashFilter))return;
     rows.push(item);
   });
   if(!rows.length){wrap.innerHTML='<div class="no-data">暂无符合条件的品项</div>';return;}
@@ -589,7 +601,7 @@ function renderDash(){
   if(dashView==='both')h+='<th>合计</th>';
   h+='<th>预警</th><th>状态</th></tr></thead><tbody>';
   rows.forEach(item=>{
-    const sup=item.sup,al=getAl(sup,item.zh);
+    const sups=getSups(item),sup=sups[0]||'',al=getAl(item,item.zh);
     const w=getStock('wetter',sup,item.zh),b=getStock('bismarck',sup,item.zh),both=getBoth(sup,item.zh);
     const fk=sup+'|'+item.zh,isFlagged=bossFlags[fk];
     const color=getSupColor(sup);
@@ -608,7 +620,7 @@ function renderDash(){
     const supDot='<span class="sup-dot" style="background:'+color+'"></span>';
     h+='<tr><td><div class="izc">'+item.zh+'</div><div class="idc">'+item.de+'</div></td>'+
        '<td>'+locDot+(item.loc||'')+'</td><td>'+freqBdg+'</td><td>'+flagBtn+'</td>'+
-       '<td>'+supDot+getSupName(sup)+'</td>';
+       '<td>'+supTags(item)+'</td>';
     if(dashView==='wetter'||dashView==='both')h+=sc(w);
     if(dashView==='bismarck'||dashView==='both')h+=sc(b);
     if(dashView==='both'){
@@ -638,19 +650,24 @@ function renderPurchase(){
   const bySup={};
   suppliers.forEach(s=>bySup[s.id]=[]);
   items.forEach(item=>{
-    const al=getAl(item.sup,item.zh),both=getBoth(item.sup,item.zh);if(!both)return;
+    const sups=getSups(item);
+    const primSup=sups[0];if(!primSup)return;
+    const al=getAl(primSup,item.zh),both=getBoth(primSup,item.zh);if(!both)return;
     const wv=both.w?both.w.val:0,bv=both.b?both.b.val:0,total=wv+bv;
     if(total>=al.val)return;
     const need=Math.ceil((al.val*2-total)*10)/10;
-    if(!bySup[item.sup])bySup[item.sup]=[];
-    bySup[item.sup].push({zh:item.zh,de:item.de,total,need,unit:both.unit||al.unit,alert:al.val});
+    // Show under ALL associated suppliers so boss can choose where to order
+    sups.forEach(sid=>{
+      if(!bySup[sid])bySup[sid]=[];
+      bySup[sid].push({zh:item.zh,de:item.de,total,need,unit:both.unit||al.unit,alert:al.val,sups:sups.map(id=>getSupName(id)).join(' / ')});
+    });
   });
   let h='';
   suppliers.forEach(sup=>{
     const its=bySup[sup.id];if(!its||!its.length)return;
     h+='<div class="card"><div class="ct">'+sup.name+' <span>'+its.length+'个品项需采购</span></div>'+
        '<div style="overflow-x:auto"><table class="tb"><thead><tr><th>品名</th><th>两店合计</th><th>预警线</th><th>建议采购量</th></tr></thead><tbody>';
-    its.forEach(it=>{h+='<tr><td><div class="izc">'+it.zh+'</div><div class="idc">'+it.de+'</div></td><td class="sc alert">'+it.total+' '+it.unit+'</td><td style="color:#8e8e93">'+it.alert+' '+it.unit+'</td><td style="font-weight:700;color:#5856d6">≥ '+it.need+' '+it.unit+'</td></tr>';});
+    its.forEach(it=>{const multiSup=it.sups&&it.sups.includes('/')?' <span style="font-size:10px;color:#8e8e93">(可选: '+it.sups+')</span>':'';h+='<tr><td><div class="izc">'+it.zh+multiSup+'</div><div class="idc">'+it.de+'</div></td><td class="sc alert">'+it.total+' '+it.unit+'</td><td style="color:#8e8e93">'+it.alert+' '+it.unit+'</td><td style="font-weight:700;color:#5856d6">≥ '+it.need+' '+it.unit+'</td></tr>';});
     h+='</tbody></table></div></div>';
   });
   if(!h)h='<div class="card"><div class="es"><div class="es-icon">✅</div><div class="es-text">所有品项库存充足</div></div></div>';
@@ -668,7 +685,7 @@ function renderDeliveryList(filter){
     const supName=sup?sup.name:d.supId;
     const storeLabel=d.store==='wetter'?'Wetter':'Bismarck';
     const itemList=(d.items||[]).map(it=>it.zh+' '+it.val+it.unit).join('、');
-    return'<div class="del-card"><div class="del-hdr"><div><div class="del-sup">'+supName+' · '+storeLabel+'</div><div class="del-time">'+d.timeStr+'</div></div><span class="del-status confirmed">已录入</span></div><div class="del-items">'+itemList+'</div></div>';
+    return'<div class="del-card"><div class="del-hdr"><div><div class="del-sup">'+supName+' · '+storeLabel+'</div><div class="del-time">'+d.timeStr+'</div></div><span class="del-status confirmed">已录入</span></div><div class="del-items">'+itemList+'</div>';
   }).join('');
 }
 
@@ -794,7 +811,7 @@ function renderFlagsPage(){
   if(!items.length){wrap.innerHTML='<div class="no-data">数据加载中...</div>';setTimeout(()=>{if(items.length)renderFlagsPage();},1500);return;}
   let rows=items;
   if(flagsSupF==='flagged')rows=rows.filter(i=>bossFlags[i.sup+'|'+i.zh]);
-  else if(flagsSupF!=='all')rows=rows.filter(i=>i.sup===flagsSupF);
+  else if(flagsSupF!=='all')rows=rows.filter(i=>hasSup(i,flagsSupF));
   if(!rows.length){wrap.innerHTML='<div class="no-data">'+(flagsSupF==='flagged'?'暂无标记品项':'暂无品项')+'</div>';return;}
   let h='<div style="overflow-x:auto"><table class="tb"><thead><tr><th>品名</th><th>供应商</th><th>位置</th><th>默认频率</th><th>状态</th><th>操作</th></tr></thead><tbody>';
   rows.forEach(item=>{
@@ -802,7 +819,7 @@ function renderFlagsPage(){
     const locDot=item.loc?'<span class="loc-dot" style="background:'+(LOC_COLORS[item.loc]||'#8e8e93')+'"></span>':'';
     const supDot='<span class="sup-dot" style="background:'+getSupColor(item.sup)+'"></span>';
     h+='<tr><td><div class="izc">'+item.zh+'</div><div class="idc">'+item.de+'</div></td>'+
-       '<td>'+supDot+getSupName(item.sup)+'</td>'+
+       '<td>'+supTags(item)+'</td>'+
        '<td>'+locDot+(item.loc||'')+'</td>'+
        '<td><span class="freq-bdg '+freqClass(item.freq)+'">'+freqLabel(item.freq)+'</span></td>'+
        '<td>'+(isFlagged?'<span class="bdg orange">🔔 本次必盘</span>':'<span class="bdg gray">正常</span>')+'</td>'+
@@ -967,7 +984,7 @@ function renderAdmin(){
   const list=document.getElementById('admin-list');if(!list)return;
   const f=adminSupF;
   let filtered=items;
-  if(f!=='all')filtered=filtered.filter(i=>i.sup===f);
+  if(f!=='all')filtered=filtered.filter(i=>hasSup(i,f));
   list.innerHTML='';
   if(!filtered.length){list.innerHTML='<div class="es" style="padding:20px"><div class="es-text">暂无品项</div></div>';return;}
   filtered.forEach((item,realIdx)=>{
@@ -1053,7 +1070,7 @@ function renderEditForm(){
       '<div class="fr"><label class="fl">中文名 *</label><input class="fi" id="f-zh" placeholder="例：和牛A5 上脑"></div>'+
       '<div class="fr"><label class="fl">德文名 / 货号</label><input class="fi" id="f-de" placeholder="例：Wagyu JPN A5 Top Blade · 792300"></div>'+
       '<div class="fr2">'+
-        '<div class="fr"><label class="fl">供应商 *</label><select class="fi" id="f-sup">'+SUP_OPTS+'</select></div>'+
+        '<div class="fr"><label class="fl">供应商 *（可多选）</label><div class="sup-checks" id="f-sup-checks">'+suppliers.map(s=>'<label style="display:flex;align-items:center;gap:6px;padding:6px 10px;background:#f9f9f9;border:1.5px solid #d1d1d6;border-radius:8px;cursor:pointer;margin-bottom:5px"><input type="checkbox" value="'+s.id+'" style="width:16px;height:16px;accent-color:'+s.color+'"><span style="font-size:13px;font-weight:600">'+s.name+'</span></label>').join('')+'</div></div>'+
         '<div class="fr"><label class="fl">分类 *</label><input class="fi" id="f-cat" placeholder="例：和牛 Wagyu A5/F1"></div>'+
       '</div>'+
       '<div class="fr2">'+
@@ -1083,7 +1100,7 @@ function renderEditForm(){
     '<div class="fr"><label class="fl">中文名 *</label><input class="fi" id="f-zh" value="'+item.zh.replace(/"/g,"&quot;")+'"></div>'+
     '<div class="fr"><label class="fl">德文名 / 货号</label><input class="fi" id="f-de" value="'+item.de.replace(/"/g,"&quot;")+'"></div>'+
     '<div class="fr2">'+
-      '<div class="fr"><label class="fl">供应商</label><select class="fi" id="f-sup">'+suppliers.map(s=>'<option value="'+s.id+'"'+(item.sup===s.id?' selected':'')+'>'+s.name+'</option>').join('')+'</select></div>'+
+      '<div class="fr"><label class="fl">供应商（可多选）</label><div class="sup-checks" id="f-sup-checks">'+suppliers.map(s=>'<label style="display:flex;align-items:center;gap:6px;padding:6px 10px;background:#f9f9f9;border:1.5px solid #d1d1d6;border-radius:8px;cursor:pointer;margin-bottom:5px"><input type="checkbox" value="'+s.id+'"'+(getSups(item).includes(s.id)?' checked':'')+' style="width:16px;height:16px;accent-color:'+s.color+'"><span style="font-size:13px;font-weight:600">'+s.name+'</span></label>').join('')+'</div></div>'+
       '<div class="fr"><label class="fl">分类</label><input class="fi" id="f-cat" value="'+item.cat.replace(/"/g,"&quot;")+'"></div>'+
     '</div>'+
     '<div class="fr2">'+
@@ -1105,13 +1122,13 @@ async function saveEditItem(){
   const item=items[selItem];if(!item)return;
   const zh=document.getElementById('f-zh').value.trim();
   const de=document.getElementById('f-de').value.trim();
-  const sup=document.getElementById('f-sup').value;
+  const sup=Array.from(document.querySelectorAll('#f-sup-checks input:checked')).map(x=>x.value);
   const cat=document.getElementById('f-cat').value.trim();
   const loc=document.getElementById('f-loc').value;
   const freq=document.getElementById('f-freq').value;
   const alv=parseFloat(document.getElementById('f-alv').value);
   const alu=document.getElementById('f-alu').value;
-  if(!zh||!cat||!alv||!alu){alert('请填写必填项');return;}
+  if(!zh||!sup.length||!cat||!alv||!alu){alert('请填写必填项，至少选一个供应商');return;}
   const oldKey=item.sup+'|'+item.zh;
   item.zh=zh;item.de=de;item.sup=sup;item.cat=cat;item.loc=loc;item.freq=freq;
   item.units=editItemUnits.length?editItemUnits:['KG'];
@@ -1124,13 +1141,13 @@ async function saveEditItem(){
 async function saveNewItem(){
   const zh=document.getElementById('f-zh').value.trim();
   const de=document.getElementById('f-de').value.trim();
-  const sup=document.getElementById('f-sup').value;
+  const sup=Array.from(document.querySelectorAll('#f-sup-checks input:checked')).map(x=>x.value);
   const cat=document.getElementById('f-cat').value.trim();
   const loc=document.getElementById('f-loc').value;
   const freq=document.getElementById('f-freq').value;
   const alv=parseFloat(document.getElementById('f-alv').value);
   const alu=document.getElementById('f-alu').value;
-  if(!zh||!sup||!cat||isNaN(alv)||!alu){alert('请填写所有必填项');return;}
+  if(!zh||!sup.length||!cat||isNaN(alv)||!alu){alert('请填写所有必填项，至少选一个供应商');return;}
   items.push({zh,de,sup,cat,loc,freq,units:editItemUnits.length?editItemUnits:['KG']});
   aData[sup+'|'+zh]={val:alv,unit:alu};
   await saveItems();await saveAlerts();
