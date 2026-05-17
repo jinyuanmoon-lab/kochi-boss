@@ -361,7 +361,29 @@ button{-webkit-appearance:none;touch-action:manipulation;cursor:pointer}
   <!-- ADMIN -->
   <div class="page" id="page-admin">
     <div class="pg-title">品类管理</div>
-    <div class="pg-sub">添加、编辑、删除品项，设置预警、位置、频率、单位</div>
+    <div class="pg-sub">添加、编辑、删除品项，设置预警、位置、频率、单位、负责员工</div>
+    <div class="card" id="batch-assign-card">
+      <div class="ct">⚡ 批量分配负责人</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+        <div>
+          <label class="fl">按条件筛选</label>
+          <select class="fi" id="batch-filter-type" style="min-width:120px;padding:7px 10px">
+            <option value="loc">按位置</option>
+            <option value="sup">按供应商</option>
+          </select>
+        </div>
+        <div>
+          <label class="fl">选择值</label>
+          <select class="fi" id="batch-filter-val" style="min-width:140px;padding:7px 10px"></select>
+        </div>
+        <div>
+          <label class="fl">分配给</label>
+          <select class="fi" id="batch-staff-sel" style="min-width:120px;padding:7px 10px"></select>
+        </div>
+        <button type="button" class="bp" id="batch-assign-btn" style="padding:8px 18px;flex:none">批量分配</button>
+        <div id="batch-result" style="font-size:12px;color:#34c759;font-weight:600"></div>
+      </div>
+    </div>
     <div class="ag">
       <div>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
@@ -472,6 +494,7 @@ function renderAll(){
   updateStaffDropdown();
   renderDeliverySupSelect();
   renderDeliveryList();
+  setTimeout(renderBatchAssign, 100);
 }
 
 // ── SUPPLIER HELPERS ───────────────────────────────────────────────
@@ -599,7 +622,7 @@ function renderDash(){
   if(dashView==='wetter'||dashView==='both')h+='<th>Wetter</th>';
   if(dashView==='bismarck'||dashView==='both')h+='<th>Bismarck</th>';
   if(dashView==='both')h+='<th>合计</th>';
-  h+='<th>预警</th><th>状态</th></tr></thead><tbody>';
+  h+='<th>负责人</th><th>预警</th><th>状态</th></tr></thead><tbody>';
   rows.forEach(item=>{
     const sups=getSups(item),sup=sups[0]||'',al=getAl(item,item.zh);
     const w=getStock('wetter',sup,item.zh),b=getStock('bismarck',sup,item.zh),both=getBoth(sup,item.zh);
@@ -628,7 +651,8 @@ function renderDash(){
       else if(both.val===null)h+='<td class="sc warn">-</td>';
       else{const cls=both.val<al.val?'alert':both.val<al.val*1.5?'warn':'ok';h+='<td class="sc '+cls+'">'+both.val.toFixed(1)+' '+both.unit+'</td>';}
     }
-    h+='<td style="color:#8e8e93;font-size:12px">'+al.val+' '+al.unit+'</td><td>'+sb()+'</td></tr>';
+    const aNames=(item.assignees||[]).map(id=>{const s=staffData.find(x=>x.id===id);return s?s.name:'';}).filter(Boolean).join('、')||'<span style="color:#c7c7cc">未分配</span>';
+    h+='<td style="font-size:12px;color:#3c3c43">'+aNames+'</td><td style="color:#8e8e93;font-size:12px">'+al.val+' '+al.unit+'</td><td>'+sb()+'</td></tr>';
   });
   h+='</tbody></table></div>';
   wrap.innerHTML=h;
@@ -992,7 +1016,9 @@ function renderAdmin(){
     const div=document.createElement('div');
     div.className='ali'+(selItem===globalIdx?' active':'');
     const color=getSupColor(item.sup);
-    div.innerHTML='<div style="min-width:0"><div class="ali-zh"><span class="sup-dot" style="background:'+color+'"></span>'+item.zh+'</div><div class="ali-de">'+item.de+'</div></div>';
+    const assigneeNames=(item.assignees||[]).map(id=>{const s=staffData.find(x=>x.id===id);return s?s.name:'';}).filter(Boolean).join('、');
+    const assigneeTag=assigneeNames?'<span style="font-size:10px;background:#eeeeff;color:#3c3489;border-radius:4px;padding:1px 5px;margin-left:4px">'+assigneeNames+'</span>':'<span style="font-size:10px;background:#f2f2f7;color:#c7c7cc;border-radius:4px;padding:1px 5px;margin-left:4px">未分配</span>';
+    div.innerHTML='<div style="min-width:0"><div class="ali-zh"><span class="sup-dot" style="background:'+color+'"></span>'+item.zh+assigneeTag+'</div><div class="ali-de">'+item.de+'</div></div>';
     div.addEventListener('click',()=>{selItem=globalIdx;isNewItem=false;renderEditForm();renderAdmin();});
     list.appendChild(div);
   });
@@ -1082,6 +1108,7 @@ function renderEditForm(){
         '<div class="fr"><label class="fl">预警单位 *</label><select class="fi" id="f-alu">'+UNITS_PRESET.map(u=>'<option>'+u+'</option>').join('')+'</select></div>'+
       '</div>'+
       '<div class="fr"><label class="fl">盘点单位（可多选）</label>'+buildUnitsEditor(editItemUnits,'ue')+'</div>'+
+      '<div class="fr"><label class="fl">负责员工（可多选）</label><div class="staff-checks" id="f-staff-checks">'+staffData.map(s=>'<label style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;background:#f9f9f9;border:1.5px solid #d1d1d6;border-radius:8px;cursor:pointer;margin:0 5px 5px 0"><input type="checkbox" value="'+s.id+'" style="width:14px;height:14px;accent-color:#5856d6"><span style="font-size:13px;font-weight:600">'+s.name+'</span></label>').join('')+'</div></div>'+
       '<div class="br"><button type="button" class="bp" id="sv-item">保存</button><button type="button" class="bs" id="cl-item">取消</button></div></div>';
     document.getElementById('sv-item').addEventListener('click',saveNewItem);
     document.getElementById('cl-item').addEventListener('click',()=>{isNewItem=false;selItem=null;panel.innerHTML='<div class="ef"><div class="es"><div class="es-icon">👈</div><div class="es-text">选择左侧品项编辑</div></div></div>';renderAdmin();});
@@ -1112,6 +1139,7 @@ function renderEditForm(){
       '<div class="fr"><label class="fl">预警单位 *</label><select class="fi" id="f-alu">'+UNITS_PRESET.map(u=>'<option'+(u===al.unit?' selected':'')+'>'+u+'</option>').join('')+'</select></div>'+
     '</div>'+
     '<div class="fr"><label class="fl">盘点单位（可多选）</label>'+buildUnitsEditor(editItemUnits,'ue')+'</div>'+
+    '<div class="fr"><label class="fl">负责员工（可多选）</label><div class="staff-checks" id="f-staff-checks">'+staffData.map(s=>'<label style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;background:#f9f9f9;border:1.5px solid #d1d1d6;border-radius:8px;cursor:pointer;margin:0 5px 5px 0"><input type="checkbox" value="'+s.id+'"'+((item.assignees||[]).includes(s.id)?' checked':'')+' style="width:14px;height:14px;accent-color:#5856d6"><span style="font-size:13px;font-weight:600">'+s.name+'</span></label>').join('')+'</div></div>'+
     '<div class="br"><button type="button" class="bp" id="sv-item">保存修改</button><button type="button" class="bd" id="dl-item">删除</button></div></div>';
   document.getElementById('sv-item').addEventListener('click',saveEditItem);
   document.getElementById('dl-item').addEventListener('click',deleteItem);
@@ -1130,8 +1158,10 @@ async function saveEditItem(){
   const alu=document.getElementById('f-alu').value;
   if(!zh||!sup.length||!cat||!alv||!alu){alert('请填写必填项，至少选一个供应商');return;}
   const oldKey=item.sup+'|'+item.zh;
+  const assignees=Array.from(document.querySelectorAll('#f-staff-checks input:checked')).map(x=>x.value);
   item.zh=zh;item.de=de;item.sup=sup;item.cat=cat;item.loc=loc;item.freq=freq;
   item.units=editItemUnits.length?editItemUnits:['KG'];
+  item.assignees=assignees;
   if(aData[oldKey])delete aData[oldKey];
   aData[sup+'|'+zh]={val:alv,unit:alu};
   await saveItems();await saveAlerts();
@@ -1148,7 +1178,8 @@ async function saveNewItem(){
   const alv=parseFloat(document.getElementById('f-alv').value);
   const alu=document.getElementById('f-alu').value;
   if(!zh||!sup.length||!cat||isNaN(alv)||!alu){alert('请填写所有必填项，至少选一个供应商');return;}
-  items.push({zh,de,sup,cat,loc,freq,units:editItemUnits.length?editItemUnits:['KG']});
+  const assignees=Array.from(document.querySelectorAll('#f-staff-checks input:checked')).map(x=>x.value);
+  items.push({zh,de,sup,cat,loc,freq,units:editItemUnits.length?editItemUnits:['KG'],assignees});
   aData[sup+'|'+zh]={val:alv,unit:alu};
   await saveItems();await saveAlerts();
   isNewItem=false;selItem=null;
@@ -1189,6 +1220,40 @@ document.getElementById('log-fa').addEventListener('change',loadLogs);
 document.getElementById('add-staff-btn').addEventListener('click',()=>{isNewStaff=true;selStaff=null;renderStaffEdit();});
 document.getElementById('add-item-btn').addEventListener('click',()=>{isNewItem=true;selItem=null;renderEditForm();renderAdmin();});
 document.getElementById('asf').addEventListener('change',e=>{adminSupF=e.target.value;selItem=null;document.getElementById('edit-panel').innerHTML='<div class="ef"><div class="es"><div class="es-icon">👈</div><div class="es-text">选择左侧品项编辑</div></div></div>';renderAdmin();});
+
+function renderBatchAssign(){
+  const ft=document.getElementById('batch-filter-type');
+  const fv=document.getElementById('batch-filter-val');
+  const ss=document.getElementById('batch-staff-sel');
+  if(!ft||!fv||!ss)return;
+  const type=ft.value;
+  if(type==='loc'){
+    fv.innerHTML=LOCS.map(l=>'<option value="'+l+'">'+l+'</option>').join('');
+  } else {
+    fv.innerHTML=suppliers.map(s=>'<option value="'+s.id+'">'+s.name+'</option>').join('');
+  }
+  ss.innerHTML='<option value="">-- 选择员工 --</option>'+staffData.map(s=>'<option value="'+s.id+'">'+s.name+'</option>').join('');
+}
+
+document.getElementById('batch-filter-type').addEventListener('change',renderBatchAssign);
+
+document.getElementById('batch-assign-btn').addEventListener('click',async()=>{
+  const type=document.getElementById('batch-filter-type').value;
+  const val=document.getElementById('batch-filter-val').value;
+  const staffId=document.getElementById('batch-staff-sel').value;
+  if(!staffId){alert('请选择要分配的员工');return;}
+  let count=0;
+  items.forEach(item=>{
+    const match=type==='loc'?item.loc===val:hasSup(item,val);
+    if(!match)return;
+    if(!item.assignees)item.assignees=[];
+    if(!item.assignees.includes(staffId)){item.assignees.push(staffId);count++;}
+  });
+  await saveItems();
+  document.getElementById('batch-result').textContent='✓ 已分配 '+count+' 个品项';
+  setTimeout(()=>{document.getElementById('batch-result').textContent='';},3000);
+  renderAdmin();
+});
 
 // Drag and drop for upload zone
 const uz=document.getElementById('upload-zone');
